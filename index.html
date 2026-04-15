@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Billing Mastery Lab — Part 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fdf6ec;--card:#fff;--primary:#b45309;--pl:#f59e0b;
+  --a1:#0f766e;--a2:#7c3aed;--a3:#be185d;--a4:#0369a1;--a5:#16a34a;
+  --tx:#1c1917;--tx2:#57534e;--bd:#fde68a;--sh:0 4px 24px rgba(180,83,9,0.10);
+  --r:18px;--rs:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;}
+
+.bg-cells{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;}
+.cell{position:absolute;border-radius:50%;opacity:0.055;animation:cp 11s ease-in-out infinite;}
+.cell:nth-child(1){width:480px;height:480px;background:var(--primary);top:-130px;right:-100px;animation-delay:0s;}
+.cell:nth-child(2){width:280px;height:280px;background:var(--a1);bottom:-60px;left:-70px;animation-delay:3.5s;}
+.cell:nth-child(3){width:190px;height:190px;background:var(--a2);top:42%;left:8%;animation-delay:6s;}
+.cell:nth-child(4){width:140px;height:140px;background:var(--a3);bottom:22%;right:18%;animation-delay:2s;}
+@keyframes cp{0%,100%{transform:scale(1);}50%{transform:scale(1.09) rotate(6deg);}}
+
+/* Header */
+.hdr{background:linear-gradient(135deg,#b45309 0%,#d97706 45%,#0f766e 100%);color:#fff;text-align:center;padding:26px 20px 20px;position:relative;z-index:10;box-shadow:0 4px 30px rgba(180,83,9,.3);}
+.pbadge{display:inline-block;background:rgba(255,255,255,.18);border-radius:30px;padding:4px 18px;font-size:.77rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;backdrop-filter:blur(6px);}
+.hdr h1{font-family:'Syne',sans-serif;font-size:clamp(1.15rem,3vw,1.95rem);font-weight:900;line-height:1.25;text-shadow:0 2px 10px rgba(0,0,0,.25);}
+.hdr .sub{margin-top:7px;font-size:.97rem;opacity:.9;font-weight:700;}
+.sbar{display:flex;align-items:center;justify-content:center;gap:13px;margin-top:13px;flex-wrap:wrap;}
+.spill{background:rgba(255,255,255,.18);border-radius:30px;padding:5px 17px;font-weight:800;font-size:.92rem;backdrop-filter:blur(6px);border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;gap:6px;}
+.pw{background:rgba(255,255,255,.22);border-radius:30px;height:10px;overflow:hidden;margin:7px auto 0;max-width:380px;}
+.pf{height:100%;border-radius:30px;background:linear-gradient(90deg,#fbbf24,#34d399);transition:width .5s ease;}
+
+/* Main */
+.main{position:relative;z-index:5;max-width:980px;margin:0 auto;padding:22px 14px 60px;}
+
+/* Tabs */
+.tw{background:#fff;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:20px;}
+.th{display:flex;overflow-x:auto;background:linear-gradient(90deg,#92400e,#d97706,#0f766e);scrollbar-width:none;}
+.th::-webkit-scrollbar{display:none;}
+.tbtn{flex-shrink:0;padding:12px 15px;color:rgba(255,255,255,.7);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.79rem;cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.tbtn:hover{color:#fff;background:rgba(255,255,255,.1);}
+.tbtn.active{color:#fff;border-bottom:3px solid #fbbf24;background:rgba(255,255,255,.15);}
+.tc{display:none;padding:24px 20px;animation:fi .3s ease;}
+.tc.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* Cards */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px;margin-bottom:15px;border:1.5px solid var(--bd);transition:transform .2s;}
+.card:hover{transform:translateY(-2px);}
+.ct{font-family:'Syne',sans-serif;font-weight:800;font-size:1.08rem;color:var(--primary);margin-bottom:9px;display:flex;align-items:center;gap:8px;}
+
+/* Grid */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:12px 0;}
+.ccard{border-radius:var(--rs);padding:15px;color:#fff;font-weight:700;text-align:center;transition:transform .2s;box-shadow:0 4px 12px rgba(0,0,0,.1);}
+.ccard:hover{transform:translateY(-3px) scale(1.03);}
+.ccard .cl{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:900;margin-bottom:5px;}
+.ccard .cd{font-size:.78rem;opacity:.93;}
+.ca{background:linear-gradient(135deg,#b45309,#f59e0b);}
+.cb{background:linear-gradient(135deg,#7c3aed,#a78bfa);}
+.cc{background:linear-gradient(135deg,#0f766e,#2dd4bf);}
+.cd2{background:linear-gradient(135deg,#be185d,#f472b6);}
+.ce{background:linear-gradient(135deg,#0369a1,#38bdf8);}
+.cf{background:linear-gradient(135deg,#16a34a,#4ade80);}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:30px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:.9rem;transition:all .2s;}
+.bpri{background:linear-gradient(135deg,var(--primary),#d97706);color:#fff;box-shadow:0 4px 14px rgba(180,83,9,.3);}
+.bpri:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(180,83,9,.4);}
+.bteal{background:linear-gradient(135deg,var(--a1),#2dd4bf);color:#fff;}
+.bteal:hover{transform:translateY(-2px);}
+.bpur{background:linear-gradient(135deg,var(--a2),#a78bfa);color:#fff;}
+.bpur:hover{transform:translateY(-2px);}
+.bgrn{background:linear-gradient(135deg,var(--a5),#4ade80);color:#fff;}
+.bgrn:hover{transform:translateY(-2px);}
+.bsm{padding:7px 13px;font-size:.81rem;}
+.brow{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px;align-items:center;}
+
+/* Q box */
+.qb{background:linear-gradient(135deg,#fef9f0,#fef3c7);border-radius:var(--r);padding:19px;margin:12px 0;border-left:5px solid var(--primary);}
+.ql{font-size:.73rem;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.qt{font-weight:700;font-size:.96rem;color:var(--tx);margin-bottom:11px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{background:#fff;border:2px solid #e7e5e4;border-radius:var(--rs);padding:10px 13px;cursor:pointer;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.86rem;color:var(--tx);transition:all .18s;display:flex;align-items:center;gap:9px;}
+.opt:hover:not(:disabled){border-color:var(--primary);background:#fef9f0;transform:translateX(3px);}
+.opt.correct{border-color:var(--a5);background:#dcfce7;color:#14532d;}
+.opt.incorrect{border-color:#ef4444;background:#fee2e2;color:#991b1b;}
+.opt:disabled{cursor:default;}
+.ol{width:26px;height:26px;border-radius:50%;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.77rem;flex-shrink:0;}
+.opt.correct .ol{background:var(--a5);color:#fff;}
+.opt.incorrect .ol{background:#ef4444;color:#fff;}
+.rat{border-radius:var(--rs);padding:12px 15px;margin-top:9px;font-size:.86rem;font-weight:600;display:none;animation:fi .3s ease;}
+.rat.show{display:block;}
+.rok{background:#dcfce7;border-left:4px solid var(--a5);color:#14532d;}
+.rng{background:#fef3c7;border-left:4px solid #f59e0b;color:#78350f;}
+.rl{font-weight:800;font-size:.74rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+
+/* Info boxes */
+.ib{background:linear-gradient(135deg,#fef9f0,#fef3c7);border-radius:var(--rs);padding:12px 15px;margin:9px 0;border-left:4px solid var(--primary);}
+.ib strong{color:var(--primary);}
+.tb2{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-radius:var(--rs);padding:12px 15px;margin:9px 0;border-left:4px solid var(--a2);}
+.tb2 strong{color:var(--a2);}
+.sb{background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:var(--rs);padding:12px 15px;margin:9px 0;border-left:4px solid var(--a5);}
+.lb{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border-radius:var(--rs);padding:12px 15px;border-left:4px solid var(--a5);margin-bottom:13px;}
+.lb .ll{font-weight:900;font-size:.73rem;text-transform:uppercase;letter-spacing:1px;color:#065f46;margin-bottom:5px;}
+.lb ul{margin-left:15px;}
+.lb li{font-weight:600;font-size:.86rem;color:#064e3b;margin-bottom:3px;}
+.instb{background:#fef3c7;border-radius:var(--rs);padding:10px 14px;border-left:4px solid var(--primary);margin-bottom:12px;}
+.instb .il{font-weight:900;font-size:.72rem;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.instb p{font-size:.85rem;font-weight:600;color:#78350f;}
+
+/* Subtabs */
+.sth{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px;}
+.stb{padding:6px 13px;border-radius:20px;border:2px solid #e7e5e4;background:#fff;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.79rem;color:var(--tx2);transition:all .18s;}
+.stb.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.stc{display:none;}
+.stc.active{display:block;animation:fi .3s ease;}
+
+/* Organism cards */
+.ocards{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px;margin:12px 0;}
+.ocard{border-radius:var(--rs);padding:15px;border:2px solid;cursor:pointer;transition:all .2s;}
+.ocard:hover{transform:translateY(-2px) scale(1.02);}
+.ocard .oi{font-size:2.1rem;margin-bottom:7px;}
+.ocard .on{font-family:'Syne',sans-serif;font-weight:800;font-size:.98rem;margin-bottom:5px;}
+.ocard .od{font-size:.78rem;font-weight:600;line-height:1.5;}
+.ob{border-color:#b45309;background:#fef9f0;color:#78350f;}.ob .on{color:#b45309;}
+.ov{border-color:#7c3aed;background:#fdf4ff;color:#4c1d95;}.ov .on{color:#7c3aed;}
+.op{border-color:#0f766e;background:#f0fdfa;color:#134e4a;}.op .on{color:#0f766e;}
+.of{border-color:#be185d;background:#fdf2f8;color:#9d174d;}.of .on{color:#be185d;}
+
+/* Scenario card */
+.scard{background:linear-gradient(135deg,#fef9f0,#fef3c7);border-radius:var(--r);padding:17px;border:1.5px solid #f59e0b;margin-bottom:13px;}
+.snum{width:35px;height:35px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.88rem;flex-shrink:0;}
+.nbox{background:#fff;border-radius:9px;padding:12px;font-size:.85rem;border-left:4px solid var(--a4);color:var(--tx2);line-height:1.7;margin-bottom:11px;font-style:italic;}
+
+/* Word cards */
+.wcard{background:#fff;border:2px solid #e7e5e4;border-radius:var(--rs);padding:11px 15px;margin:6px 0;cursor:pointer;transition:all .2s;}
+.wcard:hover{border-color:var(--primary);background:#fef9f0;}
+.wt{font-family:'Syne',sans-serif;font-weight:800;font-size:.93rem;color:var(--primary);}
+.wp{font-size:.76rem;color:var(--tx2);font-weight:600;margin-bottom:3px;}
+.wd{font-size:.83rem;font-weight:600;color:var(--tx2);display:none;margin-top:5px;line-height:1.6;}
+.wd.show{display:block;animation:fi .3s ease;}
+.wa{float:right;color:var(--primary);font-size:.88rem;transition:transform .2s;}
+.wcard.open .wa{transform:rotate(90deg);}
+
+/* Sort game */
+.pool{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0;}
+.si{background:#fff;border:2px solid #e7e5e4;border-radius:var(--rs);padding:8px 13px;cursor:pointer;font-weight:700;font-size:.83rem;transition:all .2s;}
+.si:hover:not(.placed){border-color:var(--primary);background:#fef9f0;transform:scale(1.03);}
+.si.placed{opacity:.38;pointer-events:none;}
+.si.ssel{border-color:var(--primary);background:#fef3c7;}
+.szones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px;margin:11px 0;}
+.sz{border-radius:var(--rs);padding:11px;min-height:78px;border:2px dashed;}
+.sz1{border-color:var(--primary);background:#fef9f0;}
+.sz2{border-color:var(--a2);background:#fdf4ff;}
+.sz3{border-color:var(--a1);background:#f0fdfa;}
+.sz4{border-color:var(--a3);background:#fdf2f8;}
+.szl{font-weight:900;font-size:.79rem;text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;}
+.sz1 .szl{color:var(--primary);}
+.sz2 .szl{color:var(--a2);}
+.sz3 .szl{color:var(--a1);}
+.sz4 .szl{color:var(--a3);}
+.szd{min-height:34px;display:flex;flex-wrap:wrap;gap:5px;}
+.dchip{background:#fff;border-radius:6px;padding:3px 9px;font-size:.76rem;font-weight:700;border:1.5px solid rgba(0,0,0,.1);}
+
+/* Prior knowledge */
+.pqw{background:#f5f5f4;border-radius:var(--rs);padding:13px;margin:9px 0;}
+.pqt{font-weight:700;font-size:.93rem;margin-bottom:8px;}
+.pqo{display:flex;flex-wrap:wrap;gap:7px;}
+.pqopt{background:#fff;border:2px solid #e7e5e4;border-radius:30px;padding:6px 14px;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .18s;}
+.pqopt:hover{border-color:var(--primary);background:#fef9f0;}
+.pqopt.ok{border-color:var(--a5);background:#dcfce7;color:#14532d;}
+.pqopt.ng{border-color:#ef4444;background:#fee2e2;color:#991b1b;}
+
+/* Challenge timer */
+.tbox{background:linear-gradient(135deg,#1c1917,#292524);border-radius:var(--r);padding:18px;color:#fff;margin-bottom:13px;}
+.tdis{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:900;text-align:center;color:#fbbf24;margin:8px 0;}
+.tbar{background:rgba(255,255,255,.15);border-radius:30px;height:8px;overflow:hidden;margin:7px 0;}
+.tbarfill{height:100%;border-radius:30px;background:linear-gradient(90deg,#ef4444,#fbbf24,#34d399);transition:width .5s linear;}
+
+/* Badge earned */
+.bearn{background:linear-gradient(135deg,#d97706,#f59e0b);border-radius:14px;padding:16px;text-align:center;color:#fff;margin:13px 0;animation:fi .4s ease;}
+.bearn .bei{font-size:2.8rem;margin-bottom:5px;}
+.bearn .ben{font-family:'Syne',sans-serif;font-size:1.08rem;font-weight:900;}
+.bearn .bed{font-size:.84rem;opacity:.9;margin-top:3px;}
+
+/* Compare pair */
+.cpair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:9px 0;}
+.cless{background:#fef9f0;border-radius:9px;padding:12px;border:2px solid #f59e0b;}
+.cmore{background:#dcfce7;border-radius:9px;padding:12px;border:2px solid var(--a5);}
+.clabel{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.cless .clabel{color:var(--primary);}
+.cmore .clabel{color:var(--a5);}
+
+/* Reflection */
+.rbox{background:linear-gradient(135deg,#1c1917,#3d2010);border-radius:var(--r);padding:22px;color:#fff;margin-top:17px;}
+.rbox h3{font-size:1.08rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.stxt{background:rgba(255,255,255,.07);border-radius:var(--rs);padding:13px;font-family:monospace;font-size:.84rem;line-height:1.8;color:#fde68a;white-space:pre-wrap;margin:9px 0;}
+.rtarea{width:100%;border-radius:var(--rs);border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:.86rem;padding:10px;resize:vertical;min-height:76px;margin-top:5px;outline:none;}
+.rtarea::placeholder{color:rgba(255,255,255,.35);}
+.rtarea:focus{border-color:rgba(255,255,255,.4);}
+
+/* Final banner */
+.fbanner{background:linear-gradient(135deg,#b45309,#d97706,#0f766e,#7c3aed,#be185d);color:#fff;border-radius:var(--r);padding:28px 20px;text-align:center;margin-top:26px;box-shadow:0 8px 32px rgba(180,83,9,.35);animation:fg 2.5s ease-in-out infinite;}
+@keyframes fg{0%,100%{box-shadow:0 8px 32px rgba(180,83,9,.35);}50%{box-shadow:0 14px 56px rgba(180,83,9,.55);}}
+.fbanner h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:900;margin-bottom:7px;}
+.fcode{background:rgba(255,255,255,.18);border-radius:10px;padding:11px 20px;font-size:1.05rem;font-weight:800;letter-spacing:1px;display:inline-block;margin-top:8px;border:2px solid rgba(255,255,255,.35);}
+
+/* Confetti */
+.cw{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;}
+.cd{position:absolute;width:9px;height:9px;border-radius:2px;animation:cf 1.2s ease-out forwards;}
+@keyframes cf{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(120vh) rotate(720deg);opacity:0;}}
+
+/* Tag */
+.tag{display:inline-block;padding:2px 9px;border-radius:12px;font-size:.73rem;font-weight:800;}
+.ta{background:#fef3c7;color:#92400e;}
+.tbg{background:#ede9fe;color:#5b21b6;}
+.tc2{background:#ccfbf1;color:#0f766e;}
+.td2{background:#fce7f3;color:#9d174d;}
+.te2{background:#e0f2fe;color:#0369a1;}
+.tf2{background:#dcfce7;color:#15803d;}
+
+/* Prog */
+.pw2{background:#fde68a;border-radius:30px;height:9px;overflow:hidden;margin:5px 0;}
+.pf2{height:100%;border-radius:30px;background:linear-gradient(90deg,var(--primary),var(--a1));transition:width .5s;}
+
+@media(max-width:600px){
+  .cgrid{grid-template-columns:1fr 1fr;}
+  .ocards{grid-template-columns:1fr 1fr;}
+  .szones{grid-template-columns:1fr;}
+  .cpair{grid-template-columns:1fr;}
+}
+footer{text-align:center;padding:15px;font-size:.8rem;font-weight:700;color:var(--tx2);border-top:1.5px solid var(--bd);margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="bg-cells"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div>
+<div class="cw" id="cWrap"></div>
+
+<div class="hdr">
+  <div class="pbadge">🧫 Part 3 of 3 — Final</div>
+  <h1>Medical Billing Coding Foundations<br>Interactive Mastery Lab</h1>
+  <div class="sub">Part 3: Infectious Disease Coding, Organisms, Body Systems &amp; Code Drivers</div>
+  <div class="sbar">
+    <div class="spill">⭐ <span id="sdis">Score: 0 / 0</span></div>
+    <div class="spill">🔥 <span id="strdis">Streak: 0</span></div>
+    <div class="spill">📊 <span id="pctdis">0%</span></div>
+  </div>
+  <div class="pw"><div class="pf" id="gprog" style="width:0%"></div></div>
+</div>
+
+<div class="main">
+<div class="tw">
+  <div class="th">
+    <button class="tbtn active" onclick="showT('t1',this)">🧫 ID Foundations</button>
+    <button class="tbtn" onclick="showT('t2',this)">🦠 Organisms</button>
+    <button class="tbtn" onclick="showT('t3',this)">🫁 Body Systems</button>
+    <button class="tbtn" onclick="showT('t4',this)">🔍 Main Term in ID</button>
+    <button class="tbtn" onclick="showT('t5',this)">⚡ Code Drivers</button>
+    <button class="tbtn" onclick="showT('t6',this)">📄 Note Practice</button>
+    <button class="tbtn" onclick="showT('t7',this)">🏆 Challenge Zone</button>
+    <button class="tbtn" onclick="showT('t8',this)">🎖️ Score + Reflection</button>
+  </div>
+
+  <!-- ======= TAB 1: FOUNDATIONS ======= -->
+  <div id="t1" class="tc active">
+    <div class="lb"><div class="ll">🎯 What You Will Learn</div><ul>
+      <li>Key infectious disease terminology and how it affects coding</li>
+      <li>Why provider wording may NOT match the exact ICD-10-CM index entry</li>
+      <li>How to recognize code-driving language in provider notes</li>
+      <li>The importance of reading the ENTIRE note, not just the Assessment</li>
+    </ul></div>
+    <div class="instb"><div class="il">📌 What To Do</div><p>Activate prior knowledge, click vocabulary cards to expand them, then answer the concept-check questions.</p></div>
+
+    <div class="card">
+      <div class="ct">🧠 Prior Knowledge Activation</div>
+      <div class="pqw">
+        <div class="pqt">1. Bacteria, viruses, parasites, and fungi are all types of what?</div>
+        <div class="pqo">
+          <div class="pqopt" onclick="pA(this,true,'pq1r','Infectious organisms / agents')">Infectious organisms / agents</div>
+          <div class="pqopt" onclick="pA(this,false,'pq1r','Infectious organisms / agents')">Diagnoses</div>
+          <div class="pqopt" onclick="pA(this,false,'pq1r','Infectious organisms / agents')">Symptoms</div>
+          <div class="pqopt" onclick="pA(this,false,'pq1r','Infectious organisms / agents')">Code sets</div>
+        </div>
+        <div id="pq1r" class="rat" style="margin-top:7px;"></div>
+      </div>
+      <div class="pqw" style="margin-top:8px;">
+        <div class="pqt">2. If a provider writes "pneumonia due to Staphylococcus aureus," what drives a more specific code compared to just writing "pneumonia"?</div>
+        <div class="pqo">
+          <div class="pqopt" onclick="pA(this,false,'pq2r','the documented causative organism (Staphylococcus aureus)')">The patient's age</div>
+          <div class="pqopt" onclick="pA(this,true,'pq2r','the documented causative organism (Staphylococcus aureus)')">The causative organism (Staphylococcus aureus)</div>
+          <div class="pqopt" onclick="pA(this,false,'pq2r','the documented causative organism (Staphylococcus aureus)')">The antibiotic prescribed</div>
+          <div class="pqopt" onclick="pA(this,false,'pq2r','the documented causative organism (Staphylococcus aureus)')">The visit date</div>
+        </div>
+        <div id="pq2r" class="rat" style="margin-top:7px;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">📚 Key Infectious Disease Terms — Click to Expand</div>
+      <div class="wcard" onclick="tw(this)"><div><span class="wt">Infection</span><span class="wa">▶</span></div><div class="wp">(in-FEK-shun)</div><div class="wd">Invasion and multiplication of microorganisms in the body causing disease. For coding: identify the TYPE of organism and SITE affected — both often drive the code. <strong>Main term = usually the infection type or disease name (e.g., Cellulitis, Pneumonia, Sepsis)</strong></div></div>
+      <div class="wcard" onclick="tw(this)"><div><span class="wt">Sepsis</span><span class="wa">▶</span></div><div class="wp">(SEP-sis)</div><div class="wd">Life-threatening condition where the body's response to infection becomes dysregulated. For coding: identify severity (sepsis vs. severe sepsis vs. septic shock) and the causative organism. Sequencing is critical. <strong>Main term: Sepsis → organism subterm (e.g., due to Staphylococcus)</strong></div></div>
+      <div class="wcard" onclick="tw(this)"><div><span class="wt">Cellulitis</span><span class="wa">▶</span></div><div class="wp">(sel-yoo-LY-tis)</div><div class="wd">Bacterial skin infection causing redness, swelling, warmth in deeper skin layers. For coding: the SITE and LATERALITY are the primary code drivers. Right vs left, lower leg vs foot — all matter. <strong>Main term: Cellulitis → subterm: body site → laterality</strong></div></div>
+      <div class="wcard" onclick="tw(this)"><div><span class="wt">Septicemia vs. Sepsis</span><span class="wa">▶</span></div><div class="wp">(sep-tih-SEE-mee-uh)</div><div class="wd">"Septicemia" is an OLDER term that ICD-10-CM does NOT use as a main entry. When a provider writes "septicemia," the coder must look up "Sepsis" in the index. This is a key example of provider wording NOT matching ICD-10-CM index terminology. <strong>Key rule: "Septicemia" → look up Sepsis in the Index</strong></div></div>
+      <div class="wcard" onclick="tw(this)"><div><span class="wt">Abscess</span><span class="wa">▶</span></div><div class="wp">(AB-ses)</div><div class="wd">Localized collection of pus from bacterial infection. For coding: the SITE of the abscess drives the code. Skin abscess, peritonsillar abscess, liver abscess = all different codes. <strong>Main term: Abscess → subterm: site (skin, finger, peritonsillar, liver, etc.)</strong></div></div>
+      <div class="wcard" onclick="tw(this)"><div><span class="wt">Urinary Tract Infection (UTI)</span><span class="wa">▶</span></div><div class="wp">(yur-ih-NAIR-ee trakt)</div><div class="wd">Infection of any urinary system part. For coding: identify WHERE in the urinary tract (cystitis = bladder, pyelonephritis = kidney, NOS = unspecified). Organism, if documented, further specifies the code. <strong>Main term: Cystitis, Pyelonephritis, or Urinary tract infection</strong></div></div>
+    </div>
+
+    <div class="qb" id="fq1">
+      <div class="ql">🧫 Foundations — Q1</div>
+      <div class="qt">A provider documents "septicemia due to Staphylococcus aureus." When looking this up in the Alphabetic Index, what main term should the coder use?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('fq1',this,false)"><span class="ol">A</span>Septicemia — use the provider's exact word</div>
+        <div class="opt" onclick="aQ('fq1',this,true)"><span class="ol">B</span>Sepsis — "septicemia" maps to Sepsis in ICD-10-CM; look up Sepsis first</div>
+        <div class="opt" onclick="aQ('fq1',this,false)"><span class="ol">C</span>Staphylococcus — the organism is always the main term</div>
+        <div class="opt" onclick="aQ('fq1',this,false)"><span class="ol">D</span>Bacteremia — it means the same thing as septicemia</div>
+      </div>
+      <div id="fq1-rat" class="rat"><div class="rl">💡 Rationale</div>"Septicemia" is an older clinical term that ICD-10-CM does NOT list as its primary index entry. When a provider writes "septicemia," the coder looks up "Sepsis." This is a critical example of provider documentation wording NOT matching the ICD-10-CM index entry. The coder must know to translate "septicemia" → "Sepsis." The subterm "due to Staphylococcus aureus" then further specifies the code (A41.01).</div>
+    </div>
+
+    <div class="qb" id="fq2">
+      <div class="ql">🧫 Foundations — Q2</div>
+      <div class="qt">Why might a provider's documentation wording NOT match the exact wording in the ICD-10-CM Alphabetic Index?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('fq2',this,false)"><span class="ol">A</span>Providers are not trained in ICD-10-CM terminology</div>
+        <div class="opt" onclick="aQ('fq2',this,true)"><span class="ol">B</span>Providers use clinical/medical terminology that may be synonyms, older terms, or highly specific — while ICD-10-CM may organize the same condition under a different term</div>
+        <div class="opt" onclick="aQ('fq2',this,false)"><span class="ol">C</span>The ICD-10-CM Index only uses Latin terms</div>
+        <div class="opt" onclick="aQ('fq2',this,false)"><span class="ol">D</span>Coders do not need to know medical terminology to code</div>
+      </div>
+      <div id="fq2-rat" class="rat"><div class="rl">💡 Rationale</div>Providers use clinical language reflecting their training — synonyms, older terms, or highly specific medical terminology. ICD-10-CM may list the same condition under a different term (e.g., "septicemia" → look up "Sepsis"; "blood poisoning" → look up "Sepsis"; "flu" → look up "Influenza"). Coders must know medical terminology AND how ICD-10-CM organizes conditions to bridge this gap. Medical terminology knowledge is essential for accurate coding.</div>
+    </div>
+
+    <div class="brow"><button class="btn bpri" onclick="showT('t2',document.querySelectorAll('.tbtn')[1])">Next: Organisms & Agents →</button></div>
+  </div>
+
+  <!-- ======= TAB 2: ORGANISMS ======= -->
+  <div id="t2" class="tc">
+    <div class="lb"><div class="ll">🎯 What You Will Learn</div><ul>
+      <li>The four main infectious organism types: bacteria, viruses, parasites, fungi</li>
+      <li>Why the organism type matters for ICD-10-CM code selection</li>
+      <li>How to recognize common organism names in clinical documentation</li>
+      <li>How organism specificity produces more specific codes</li>
+    </ul></div>
+    <div class="instb"><div class="il">📌 What To Do</div><p>Click each organism card to learn about it. Then sort organisms into the correct category and answer questions.</p></div>
+
+    <div class="ocards">
+      <div class="ocard ob" onclick="orgDet('bact')"><div class="oi">🦠</div><div class="on">Bacteria</div><div class="od">Single-celled microorganisms. Treated with antibiotics.<br><em>Examples: Streptococcus, Staphylococcus, E. coli, Klebsiella, MRSA, C. diff</em></div></div>
+      <div class="ocard ov" onclick="orgDet('virus')"><div class="oi">🔬</div><div class="on">Virus</div><div class="od">Submicroscopic; replicates inside host cells. NOT treated with antibiotics.<br><em>Examples: Influenza, COVID-19, RSV, HIV, Herpes, Hepatitis B/C</em></div></div>
+      <div class="ocard op" onclick="orgDet('para')"><div class="oi">🪱</div><div class="on">Parasite</div><div class="od">Lives on/inside a host. Can be microscopic or macroscopic.<br><em>Examples: Plasmodium (Malaria), Giardia, Toxoplasma, Tapeworm</em></div></div>
+      <div class="ocard of" onclick="orgDet('fung')"><div class="oi">🍄</div><div class="on">Fungus</div><div class="od">Yeasts and molds; often in immunocompromised patients.<br><em>Examples: Candida (thrush), Aspergillus, Cryptococcus, Histoplasma</em></div></div>
+    </div>
+    <div id="orgDBox" style="display:none;margin:10px 0;" class="ib"></div>
+
+    <div class="card">
+      <div class="ct">🔬 Why Organism Type Affects Code Selection</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:11px;">
+        <div style="background:#fef9f0;border-radius:9px;padding:12px;border-left:3px solid var(--primary);"><div style="font-weight:800;color:var(--primary);margin-bottom:4px;">🦠 Bacteria</div><div style="font-size:.82rem;font-weight:600;color:#78350f;">Specific bacteria → specific codes. "Bacterial pneumonia" (J15.9) vs. "Staphylococcal pneumonia" (J15.20) vs. "Pneumococcal pneumonia" (J13). The organism name drives the subterm path.</div></div>
+        <div style="background:#fdf4ff;border-radius:9px;padding:12px;border-left:3px solid var(--a2);"><div style="font-weight:800;color:var(--a2);margin-bottom:4px;">🔬 Virus</div><div style="font-size:.82rem;font-weight:600;color:#4c1d95;">Viral infections have dedicated code categories. Influenza (J09-J11), COVID-19 (U07.1), RSV (J06.9), HIV (B20). The specific virus drives which category is used.</div></div>
+        <div style="background:#f0fdfa;border-radius:9px;padding:12px;border-left:3px solid var(--a1);"><div style="font-weight:800;color:var(--a1);margin-bottom:4px;">🪱 Parasite</div><div style="font-size:.82rem;font-weight:600;color:#134e4a;">Chapter 1 covers many. Malaria (B50-B54), Toxoplasmosis (B58), Intestinal parasites (B76-B83). Specific parasite AND site both matter.</div></div>
+        <div style="background:#fdf2f8;border-radius:9px;padding:12px;border-left:3px solid var(--a3);"><div style="font-weight:800;color:var(--a3);margin-bottom:4px;">🍄 Fungus</div><div style="font-size:.82rem;font-weight:600;color:#9d174d;">Fungal infections (mycoses) B35-B49. Candidiasis by site (B37.-), Aspergillosis (B44.-), skin fungi (B35.-). Both organism AND site drive the code.</div></div>
+      </div>
+    </div>
+
+    <!-- Organism sorter -->
+    <div class="card">
+      <div class="ct">🎮 Organism Classification Sorter</div>
+      <p style="font-size:.85rem;color:var(--tx2);font-weight:600;margin-bottom:9px;">Click each organism, then click its category below.</p>
+      <div class="pool" id="orgPool">
+        <div class="si" data-cat="bacteria" onclick="orgSel(this)">Staphylococcus aureus</div>
+        <div class="si" data-cat="virus" onclick="orgSel(this)">Influenza A</div>
+        <div class="si" data-cat="parasite" onclick="orgSel(this)">Plasmodium falciparum</div>
+        <div class="si" data-cat="fungus" onclick="orgSel(this)">Candida albicans</div>
+        <div class="si" data-cat="bacteria" onclick="orgSel(this)">Streptococcus pneumoniae</div>
+        <div class="si" data-cat="virus" onclick="orgSel(this)">COVID-19 (SARS-CoV-2)</div>
+        <div class="si" data-cat="fungus" onclick="orgSel(this)">Aspergillus fumigatus</div>
+        <div class="si" data-cat="parasite" onclick="orgSel(this)">Giardia lamblia</div>
+      </div>
+      <div id="orgSelBox" style="display:none;margin:9px 0;">
+        <div class="ib"><strong>Selected:</strong> <span id="orgSelTxt"></span></div>
+        <div style="font-weight:700;margin:7px 0 5px;">What type of organism is this?</div>
+        <div class="brow">
+          <button class="btn bpri bsm" onclick="placeOrg('bacteria')">🦠 Bacteria</button>
+          <button class="btn bpur bsm" onclick="placeOrg('virus')">🔬 Virus</button>
+          <button class="btn bteal bsm" onclick="placeOrg('parasite')">🪱 Parasite</button>
+          <button class="btn bsm" style="background:linear-gradient(135deg,#be185d,#f472b6);color:#fff;" onclick="placeOrg('fungus')">🍄 Fungus</button>
+        </div>
+      </div>
+      <div class="szones">
+        <div class="sz sz1"><div class="szl">🦠 Bacteria</div><div class="szd" id="drop-bacteria"></div></div>
+        <div class="sz sz2"><div class="szl">🔬 Virus</div><div class="szd" id="drop-virus"></div></div>
+        <div class="sz sz3"><div class="szl">🪱 Parasite</div><div class="szd" id="drop-parasite"></div></div>
+        <div class="sz sz4"><div class="szl">🍄 Fungus</div><div class="szd" id="drop-fungus"></div></div>
+      </div>
+      <div id="orgFB" style="margin-top:7px;"></div>
+      <div id="orgDone" style="display:none;" class="sb"><strong>🎉 Perfect!</strong> You can identify all four organism types — this skill directly helps you navigate the ICD-10-CM index.</div>
+    </div>
+
+    <div class="qb" id="oq1">
+      <div class="ql">🦠 Organism — Q1</div>
+      <div class="qt">A provider documents "candidal vaginitis." Candida is a fungus. What is the best coding approach?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('oq1',this,false)"><span class="ol">A</span>Look up Vaginitis → bacterial → Candida</div>
+        <div class="opt" onclick="aQ('oq1',this,true)"><span class="ol">B</span>Look up Candidiasis → vulvovaginitis (B37.3) OR Vaginitis → candidal → B37.3; knowing Candida is a fungus guides the correct subterm path</div>
+        <div class="opt" onclick="aQ('oq1',this,false)"><span class="ol">C</span>Look up Parasite → Candida → reproductive system</div>
+        <div class="opt" onclick="aQ('oq1',this,false)"><span class="ol">D</span>Look up Fungal infection NOS → female</div>
+      </div>
+      <div id="oq1-rat" class="rat"><div class="rl">💡 Rationale</div>Knowing Candida is a fungus helps the coder navigate correctly — not looking under "bacteria" or "parasite." Two valid index paths both lead to B37.3: (1) Candidiasis → vulva and vagina; or (2) Vaginitis → candidal. Either entry works. Knowing organism types prevents the coder from looking in the wrong section of the index. Always verify in the Tabular List after finding the index code suggestion.</div>
+    </div>
+
+    <div class="qb" id="oq2">
+      <div class="ql">🦠 Organism — Q2</div>
+      <div class="qt">A provider documents "UTI due to E. coli." How does documenting the specific organism affect coding compared to just "UTI"?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('oq2',this,false)"><span class="ol">A</span>It doesn't change anything — UTI codes are the same regardless of organism</div>
+        <div class="opt" onclick="aQ('oq2',this,true)"><span class="ol">B</span>It allows a more specific code AND may require an additional organism code (B96.20 for E. coli) per "Use additional code" instructions in the Tabular</div>
+        <div class="opt" onclick="aQ('oq2',this,false)"><span class="ol">C</span>E. coli is only coded if the patient is hospitalized</div>
+        <div class="opt" onclick="aQ('oq2',this,false)"><span class="ol">D</span>The organism replaces the UTI code entirely</div>
+      </div>
+      <div id="oq2-rat" class="rat"><div class="rl">💡 Rationale</div>Documenting E. coli adds specificity AND triggers an additional code requirement. The Tabular for UTI/cystitis codes often has a "Use additional code" instruction to identify the organism using B95-B97 codes. E. coli = B96.20. The result: one code for the infection site/type (e.g., N30.00 for acute cystitis) PLUS B96.20 for the organism. Specific documentation = more complete, accurate coding.</div>
+    </div>
+
+    <div class="brow"><button class="btn bpri" onclick="showT('t3',document.querySelectorAll('.tbtn')[2])">Next: Body Systems →</button></div>
+  </div>
+
+  <!-- ======= TAB 3: BODY SYSTEMS ======= -->
+  <div id="t3" class="tc">
+    <div class="lb"><div class="ll">🎯 What You Will Learn</div><ul>
+      <li>How the body system/site affected changes the ICD-10-CM code</li>
+      <li>When SITE drives the code vs. when ORGANISM/DISEASE NAME drives it</li>
+      <li>How some disease names already include both site and organism logic</li>
+      <li>Laterality and site specificity in infectious disease coding</li>
+    </ul></div>
+    <div class="instb"><div class="il">📌 What To Do</div><p>Review site vs. organism logic, study the body system overview, then answer questions.</p></div>
+
+    <div class="card">
+      <div class="ct">🫁 Site vs. Organism — Which Drives the Code?</div>
+      <div class="ib"><strong>Key Concept:</strong> Sometimes the SITE is the primary code driver (cellulitis, abscess, UTI site). Other times, the DISEASE NAME or ORGANISM is the primary driver (tuberculosis, influenza, HIV). Analyze the documentation to determine which applies.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:11px;">
+        <div style="background:#fef9f0;border-radius:9px;padding:12px;border-left:3px solid var(--primary);">
+          <div style="font-weight:800;color:var(--primary);margin-bottom:4px;">📍 When SITE Drives the Code</div>
+          <div style="font-size:.82rem;font-weight:600;color:#78350f;">Cellulitis, Abscess, UTI site (cystitis vs pyelonephritis), Osteomyelitis, Wound infection.<br>→ Site (and laterality) = key subterm<br>Example: Cellulitis of right lower leg → <em>right lower leg</em> is the key</div>
+        </div>
+        <div style="background:#fdf4ff;border-radius:9px;padding:12px;border-left:3px solid var(--a2);">
+          <div style="font-weight:800;color:var(--a2);margin-bottom:4px;">🦠 When ORGANISM/DISEASE Drives the Code</div>
+          <div style="font-size:.82rem;font-weight:600;color:#4c1d95;">Tuberculosis, Lyme disease, MRSA, Salmonella, Influenza, COVID-19, HIV.<br>→ Disease name = main term; site = subterm<br>Example: Pulmonary tuberculosis → <em>Tuberculosis</em> is the key</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cgrid">
+      <div class="ccard ca"><div class="cl">Respiratory</div><div class="cd">Pneumonia, Bronchitis, URTI, Influenza, COVID-19 pneumonia, TB<br>Key: organism + site (upper vs lower)</div></div>
+      <div class="ccard cb"><div class="cl">Urinary</div><div class="cd">Cystitis, Pyelonephritis, UTI NOS<br>Key: site within urinary tract + organism if documented</div></div>
+      <div class="ccard cc"><div class="cl">Skin & Soft Tissue</div><div class="cd">Cellulitis, Abscess, Impetigo, Folliculitis<br>Key: exact site + laterality</div></div>
+      <div class="ccard cd2"><div class="cl">Blood / Systemic</div><div class="cd">Sepsis, Bacteremia, SIRS<br>Key: organism + severity level</div></div>
+      <div class="ccard ce"><div class="cl">Gastrointestinal</div><div class="cd">Gastroenteritis, C. diff colitis, Hepatitis, Peritonitis<br>Key: organism or disease name</div></div>
+      <div class="ccard cf"><div class="cl">Nervous System</div><div class="cd">Meningitis, Encephalitis, Brain abscess<br>Key: organism type (bacterial vs viral vs fungal = different codes)</div></div>
+    </div>
+
+    <div class="qb" id="bq1">
+      <div class="ql">🫁 Body System — Q1</div>
+      <div class="qt">A provider documents "cellulitis of the right foot." What is the PRIMARY driver of code specificity?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('bq1',this,false)"><span class="ol">A</span>The causative organism — which bacteria caused the cellulitis</div>
+        <div class="opt" onclick="aQ('bq1',this,true)"><span class="ol">B</span>The site and laterality — "right foot" drives which cellulitis code is selected</div>
+        <div class="opt" onclick="aQ('bq1',this,false)"><span class="ol">C</span>The patient's age — pediatric and adult cellulitis use different codes</div>
+        <div class="opt" onclick="aQ('bq1',this,false)"><span class="ol">D</span>The severity — mild vs severe cellulitis changes the code</div>
+      </div>
+      <div id="bq1-rat" class="rat"><div class="rl">💡 Rationale</div>For cellulitis, SITE and LATERALITY are the primary code drivers. Index path: Cellulitis → foot → right foot → L03.011. Left foot = L03.012. The organism, while clinically important, is not always separately coded for cellulitis unless documented and unless the Tabular has a "Use additional code" instruction. Laterality (right vs left) is critical and must match the documentation exactly.</div>
+    </div>
+
+    <div class="qb" id="bq2">
+      <div class="ql">🫁 Body System — Q2</div>
+      <div class="qt">A provider documents "bacterial meningitis due to Streptococcus pneumoniae." What drives the MOST SPECIFIC code?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('bq2',this,false)"><span class="ol">A</span>The site alone — meningitis always uses the same code regardless of cause</div>
+        <div class="opt" onclick="aQ('bq2',this,true)"><span class="ol">B</span>Both site AND organism — bacterial meningitis codes are specific to the causative organism (Streptococcal meningitis = G00.1)</div>
+        <div class="opt" onclick="aQ('bq2',this,false)"><span class="ol">C</span>The term "bacterial" only — no further specificity needed</div>
+        <div class="opt" onclick="aQ('bq2',this,false)"><span class="ol">D</span>Code the symptoms — headache and fever drive the code</div>
+      </div>
+      <div id="bq2-rat" class="rat"><div class="rl">💡 Rationale</div>For meningitis, BOTH the site (meninges) AND the organism determine the code. "Bacterial meningitis NOS" = G00.9 (unspecified). "Streptococcal meningitis" = G00.1 (more specific). Unlike cellulitis where the site alone is usually sufficient, in meningitis the organism type (bacterial, viral, fungal) AND the specific organism both shape code selection. Specific documentation → specific code → better clinical capture.</div>
+    </div>
+
+    <div class="qb" id="bq3">
+      <div class="ql">🫁 Body System — Q3</div>
+      <div class="qt">A patient is diagnosed with "pulmonary tuberculosis." The disease name already implies the organism (Mycobacterium tuberculosis). What is the correct coding approach?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('bq3',this,false)"><span class="ol">A</span>Look up "Mycobacterium" first — organism is always the main term</div>
+        <div class="opt" onclick="aQ('bq3',this,true)"><span class="ol">B</span>Look up "Tuberculosis" (the disease name) as the main term, with "pulmonary" as the subterm — the disease name encompasses the organism</div>
+        <div class="opt" onclick="aQ('bq3',this,false)"><span class="ol">C</span>Look up "Pulmonary" first — site drives the main term</div>
+        <div class="opt" onclick="aQ('bq3',this,false)"><span class="ol">D</span>Code the symptoms — cough and hemoptysis drive TB coding</div>
+      </div>
+      <div id="bq3-rat" class="rat"><div class="rl">💡 Rationale</div>Some disease names inherently include the organism. "Tuberculosis" = caused by Mycobacterium tuberculosis — this is embedded in the disease name. Index path: Tuberculosis → pulmonary → A15.0. The coder does NOT look up "Mycobacterium" separately. The disease name IS the main term. The subterm "pulmonary" narrows the site. This is the case for many named diseases (Lyme disease, Salmonellosis, Shigellosis, etc.).</div>
+    </div>
+
+    <div class="brow"><button class="btn bpri" onclick="showT('t4',document.querySelectorAll('.tbtn')[3])">Next: Main Term in ID Coding →</button></div>
+  </div>
+
+  <!-- ======= TAB 4: MAIN TERM IN ID ======= -->
+  <div id="t4" class="tc">
+    <div class="lb"><div class="ll">🎯 What You Will Learn</div><ul>
+      <li>How to identify the main term in infectious disease documentation</li>
+      <li>When the organism is the main term vs. when the condition/disease name is</li>
+      <li>How the same infection may have multiple valid index entry points</li>
+      <li>How ICD-10-CM terminology can differ from provider language</li>
+    </ul></div>
+    <div class="instb"><div class="il">📌 What To Do</div><p>For each documentation example below, select the best main term. Then answer the questions about real-world infectious disease coding challenges.</p></div>
+
+    <div class="card">
+      <div class="ct">🔍 Main Term Decision Guide — 3 Questions</div>
+      <div style="background:#fef9f0;border-radius:9px;padding:13px;margin-bottom:11px;">
+        <div style="font-weight:800;color:var(--primary);margin-bottom:7px;">Ask yourself before looking up any code:</div>
+        <div style="font-size:.86rem;font-weight:600;color:var(--tx2);line-height:2.1;">
+          <div>1️⃣ Is there a specific <strong>named disease</strong> that encompasses everything? (Tuberculosis, Lyme disease, HIV, Influenza, C. diff) → Use the <strong style="color:var(--primary);">disease name</strong> as main term</div>
+          <div>2️⃣ Is the documentation a <strong>general infection type + site</strong>? (Cellulitis of leg, abscess of finger, UTI) → Use the <strong style="color:var(--primary);">infection type/condition</strong> as main term, site as subterm</div>
+          <div>3️⃣ Is there a <strong>known organism + non-specific infection term</strong>? (Staphylococcal infection, Klebsiella infection) → Try BOTH the organism AND the infection type to find the best path</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">📝 Main Term Practice — Click the Best Answer</div>
+      <div style="display:flex;flex-direction:column;gap:11px;">
+        <div style="background:#f5f5f4;border-radius:9px;padding:12px;">
+          <div style="font-weight:800;margin-bottom:6px;">Documentation: <span style="color:var(--primary);">"Herpes zoster with postherpetic neuralgia"</span></div>
+          <div style="font-size:.84rem;color:var(--tx2);font-weight:600;margin-bottom:6px;">Best main term to look up?</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;" id="mt1g">
+            <div class="si" onclick="mtA(this,'mt1g','Herpes zoster','mt1e')">Herpes zoster</div>
+            <div class="si" onclick="mtA(this,'mt1g','Herpes','mt1e')">Herpes</div>
+            <div class="si" onclick="mtA(this,'mt1g','Neuralgia','mt1e')">Neuralgia</div>
+            <div class="si" onclick="mtA(this,'mt1g','Postherpetic','mt1e')">Postherpetic</div>
+          </div>
+          <div id="mt1e" style="margin-top:7px;font-size:.83rem;font-weight:600;min-height:18px;"></div>
+        </div>
+        <div style="background:#f5f5f4;border-radius:9px;padding:12px;">
+          <div style="font-weight:800;margin-bottom:6px;">Documentation: <span style="color:var(--a1);">"Osteomyelitis of the right tibia, acute"</span></div>
+          <div style="font-size:.84rem;color:var(--tx2);font-weight:600;margin-bottom:6px;">Best main term?</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;" id="mt2g">
+            <div class="si" onclick="mtA(this,'mt2g','Osteomyelitis','mt2e')">Osteomyelitis</div>
+            <div class="si" onclick="mtA(this,'mt2g','Tibia','mt2e')">Tibia</div>
+            <div class="si" onclick="mtA(this,'mt2g','Acute','mt2e')">Acute</div>
+            <div class="si" onclick="mtA(this,'mt2g','Right','mt2e')">Right</div>
+          </div>
+          <div id="mt2e" style="margin-top:7px;font-size:.83rem;font-weight:600;min-height:18px;"></div>
+        </div>
+        <div style="background:#f5f5f4;border-radius:9px;padding:12px;">
+          <div style="font-weight:800;margin-bottom:6px;">Documentation: <span style="color:var(--a2);">"HIV disease resulting in Kaposi's sarcoma"</span></div>
+          <div style="font-size:.84rem;color:var(--tx2);font-weight:600;margin-bottom:6px;">Best main term?</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;" id="mt3g">
+            <div class="si" onclick="mtA(this,'mt3g','HIV','mt3e')">HIV disease</div>
+            <div class="si" onclick="mtA(this,'mt3g','Kaposi','mt3e')">Kaposi's sarcoma</div>
+            <div class="si" onclick="mtA(this,'mt3g','Sarcoma','mt3e')">Sarcoma</div>
+            <div class="si" onclick="mtA(this,'mt3g','Disease','mt3e')">Disease</div>
+          </div>
+          <div id="mt3e" style="margin-top:7px;font-size:.83rem;font-weight:600;min-height:18px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qb" id="mtq1">
+      <div class="ql">🔍 Main Term — Q1</div>
+      <div class="qt">A provider documents "infection due to Clostridium difficile (C. diff) with pseudomembranous colitis." What is the correct main term in the ICD-10-CM Alphabetic Index?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('mtq1',this,false)"><span class="ol">A</span>Colitis — the colon is the primary body site</div>
+        <div class="opt" onclick="aQ('mtq1',this,false)"><span class="ol">B</span>Infection — the general infection category</div>
+        <div class="opt" onclick="aQ('mtq1',this,true)"><span class="ol">C</span>Enterocolitis — ICD-10-CM classifies C. diff under Enterocolitis → due to Clostridium difficile → A04.7_</div>
+        <div class="opt" onclick="aQ('mtq1',this,false)"><span class="ol">D</span>Clostridium — the organism name is always first</div>
+      </div>
+      <div id="mtq1-rat" class="rat"><div class="rl">💡 Rationale</div>C. difficile colitis is classified under "Enterocolitis due to Clostridium difficile" (A04.7_) in ICD-10-CM. The main term is "Enterocolitis" — not "colitis," not "Clostridium," not "infection." This is a prime example of provider terminology ("pseudomembranous colitis") not matching the ICD-10-CM index term ("Enterocolitis"). The coder must know both the clinical term AND how ICD-10-CM organizes it to find the correct code.</div>
+    </div>
+
+    <div class="qb" id="mtq2">
+      <div class="ql">🔍 Main Term — Q2</div>
+      <div class="qt">A provider documents "MRSA infection of a surgical wound." What should the coder know about how to code this?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('mtq2',this,false)"><span class="ol">A</span>MRSA is coded with a single code covering the infection and organism together</div>
+        <div class="opt" onclick="aQ('mtq2',this,false)"><span class="ol">B</span>MRSA is treated identically to any other Staphylococcal infection — same code</div>
+        <div class="opt" onclick="aQ('mtq2',this,true)"><span class="ol">C</span>The wound infection code is assigned for the site, PLUS an additional code for MRSA as the causative organism (B95.62) — the Tabular typically requires both</div>
+        <div class="opt" onclick="aQ('mtq2',this,false)"><span class="ol">D</span>MRSA is never separately coded — it is clinical information only</div>
+      </div>
+      <div id="mtq2-rat" class="rat"><div class="rl">💡 Rationale</div>MRSA coding requires specific attention. Many infection codes in the Tabular have a "Use additional code" instruction to identify MRSA when it is the causative organism — typically B95.62 (MRSA as the cause of diseases classified elsewhere). The wound infection code is based on the site/type, and MRSA is separately identified. This is why reading ALL Tabular notes matters — you would miss the MRSA additional code requirement if you stopped at the index.</div>
+    </div>
+
+    <div class="brow"><button class="btn bpri" onclick="showT('t5',document.querySelectorAll('.tbtn')[4])">Next: What Drives the Code? →</button></div>
+  </div>
+
+  <!-- ======= TAB 5: CODE DRIVERS ======= -->
+  <div id="t5" class="tc">
+    <div class="lb"><div class="ll">🎯 What You Will Learn</div><ul>
+      <li>The 6 key code drivers in infectious disease documentation</li>
+      <li>How slight wording changes in a provider's note change the code</li>
+      <li>How to identify code-driving clues even when they appear later in the note</li>
+      <li>Why specificity in documentation produces more clinically accurate codes</li>
+    </ul></div>
+    <div class="instb"><div class="il">📌 What To Do</div><p>Study the 6 code drivers and compare pairs, then answer the applied questions.</p></div>
+
+    <div class="cgrid">
+      <div class="ccard ca"><div class="cl">1. Main Term</div><div class="cd">The condition/disease name — FIRST lookup in the Index</div></div>
+      <div class="ccard cb"><div class="cl">2. Organism</div><div class="cd">Specific bacteria/virus/parasite/fungus → specific code or additional code</div></div>
+      <div class="ccard cc"><div class="cl">3. Body Site</div><div class="cd">Exact location — right leg vs. left leg, upper vs. lower respiratory tract</div></div>
+      <div class="ccard cd2"><div class="cl">4. Severity</div><div class="cd">Acute vs. chronic, mild/moderate/severe, with or without complications</div></div>
+      <div class="ccard ce"><div class="cl">5. Laterality</div><div class="cd">Right, left, bilateral — required for many ICD-10-CM codes</div></div>
+      <div class="ccard cf"><div class="cl">6. Manifestation</div><div class="cd">Result or complication of the infection — may need additional codes or sequencing</div></div>
+    </div>
+
+    <div class="card">
+      <div class="ct">🔀 How Wording Changes the Code — Compare Pairs</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="cpair">
+          <div class="cless"><div class="clabel">Less Specific</div><div style="font-weight:700;">"Pneumonia"</div><div style="font-size:.78rem;color:var(--tx2);margin-top:4px;">→ J18.9 (Unspecified pneumonia)</div></div>
+          <div class="cmore"><div class="clabel">More Specific</div><div style="font-weight:700;">"Pneumonia due to Streptococcus pneumoniae"</div><div style="font-size:.78rem;color:var(--tx2);margin-top:4px;">→ J13 (Pneumococcal pneumonia)</div></div>
+        </div>
+        <div class="cpair">
+          <div class="cless"><div class="clabel">Less Specific</div><div style="font-weight:700;">"Cellulitis of leg"</div><div style="font-size:.78rem;color:var(--tx2);margin-top:4px;">→ L03.119 (Unspecified leg)</div></div>
+          <div class="cmore"><div class="clabel">More Specific</div><div style="font-weight:700;">"Cellulitis of right lower leg"</div><div style="font-size:.78rem;color:var(--tx2);margin-top:4px;">→ L03.115 (Right lower leg)</div></div>
+        </div>
+        <div class="cpair">
+          <div class="cless"><div class="clabel">Less Specific</div><div style="font-weight:700;">"UTI"</div><div style="font-size:.78rem;color:var(--tx2);margin-top:4px;">→ N39.0 (UTI, site not specified)</div></div>
+          <div class="cmore"><div class="clabel">More Specific</div><div style="font-weight:700;">"Acute cystitis due to E. coli"</div><div style="font-size:.78rem;color:var(--tx2);margin-top:4px;">→ N30.00 + B96.20 (E. coli organism)</div></div>
+        </div>
+        <div class="cpair">
+          <div class="cless"><div class="clabel">Less Specific</div><div style="font-weight:700;">"Sepsis"</div><div style="font-size:.78rem;color:var(--tx2);margin-top:4px;">→ A41.9 (Sepsis, unspecified organism)</div></div>
+          <div class="cmore"><div class="clabel">More Specific</div><div style="font-weight:700;">"Severe sepsis due to MRSA with septic shock"</div><div style="font-size:.78rem;color:var(--tx2);margin-top:4px;">→ A41.02 + R65.21 (severe sepsis with shock) + B95.62 (MRSA)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qb" id="dq1">
+      <div class="ql">⚡ Code Driver — Q1</div>
+      <div class="qt">A provider documents "fever and cough" at the start of the note, then the Assessment states: "Influenza A, confirmed." What should be coded?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('dq1',this,false)"><span class="ol">A</span>Fever and cough — they were documented first</div>
+        <div class="opt" onclick="aQ('dq1',this,true)"><span class="ol">B</span>Influenza A — the confirmed Assessment diagnosis; fever and cough are integral symptoms not separately coded when the confirmed diagnosis is documented</div>
+        <div class="opt" onclick="aQ('dq1',this,false)"><span class="ol">C</span>Both the symptoms AND Influenza A — all documented findings must be coded</div>
+        <div class="opt" onclick="aQ('dq1',this,false)"><span class="ol">D</span>Influenza A is only coded if confirmed by a rapid flu test result</div>
+      </div>
+      <div id="dq1-rat" class="rat"><div class="rl">💡 Rationale</div>The confirmed Assessment diagnosis (Influenza A) drives code selection for the entire encounter — even though the symptoms were documented earlier in the note. Fever and cough are classic integral symptoms of influenza — they are NOT separately coded when the confirmed diagnosis is documented. The entire note is read, and the Assessment/confirmed diagnosis always takes priority over symptom coding when both are present in the same note.</div>
+    </div>
+
+    <div class="qb" id="dq2">
+      <div class="ql">⚡ Code Driver — Q2</div>
+      <div class="qt">A note's Assessment says "skin abscess, left arm." Later in the SAME note, culture results are documented: "Staphylococcus aureus." Can the coder use the organism information from later in the note?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('dq2',this,false)"><span class="ol">A</span>No — only information in the Assessment section can be coded</div>
+        <div class="opt" onclick="aQ('dq2',this,true)"><span class="ol">B</span>Yes — all documentation within the same encounter note can inform code selection; the Tabular may require an additional organism code when the organism is documented anywhere in the note</div>
+        <div class="opt" onclick="aQ('dq2',this,false)"><span class="ol">C</span>Wait for a new visit note to code the organism</div>
+        <div class="opt" onclick="aQ('dq2',this,false)"><span class="ol">D</span>Code only the organism — ignore the "skin abscess" entry</div>
+      </div>
+      <div id="dq2-rat" class="rat"><div class="rl">💡 Rationale</div>All documentation within the SAME encounter note can be used by the coder — not just the Assessment. If culture results appear later in the note, the coder can use this information. The Tabular for skin abscess codes often has a "Use additional code" instruction for the causative organism — allowing the coder to add B95.61 (Staphylococcus aureus as the cause). The causative organism can be documented ANYWHERE in the same encounter note and is fair to code.</div>
+    </div>
+
+    <div class="qb" id="dq3">
+      <div class="ql">⚡ Code Driver — Q3</div>
+      <div class="qt">Which documentation phrase would produce the MOST SPECIFIC and COMPLETE set of ICD-10-CM codes for a sepsis case?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('dq3',this,false)"><span class="ol">A</span>"Sepsis" — general diagnosis</div>
+        <div class="opt" onclick="aQ('dq3',this,false)"><span class="ol">B</span>"Sepsis due to bacteria" — identifies organism type only</div>
+        <div class="opt" onclick="aQ('dq3',this,false)"><span class="ol">C</span>"Sepsis due to Staphylococcus aureus" — specific organism identified</div>
+        <div class="opt" onclick="aQ('dq3',this,true)"><span class="ol">D</span>"Severe sepsis due to Staphylococcus aureus with septic shock" — identifies organism, severity, AND complication → multiple specific codes required</div>
+      </div>
+      <div id="dq3-rat" class="rat"><div class="rl">💡 Rationale</div>"Severe sepsis due to Staphylococcus aureus with septic shock" provides the most code drivers: (1) Staphylococcal sepsis code (A41.01), (2) Severe sepsis (R65.20 or R65.21), (3) Septic shock (R65.21 or T81.12XA), potentially (4) B95.61/B95.62 for MRSA if applicable. Each documented detail — organism, severity, presence of shock — adds codes and clinical accuracy. Comprehensive provider documentation directly enables comprehensive, accurate coding.</div>
+    </div>
+
+    <div class="brow"><button class="btn bpri" onclick="showT('t6',document.querySelectorAll('.tbtn')[5])">Next: Provider Note Practice →</button></div>
+  </div>
+
+  <!-- ======= TAB 6: NOTE PRACTICE ======= -->
+  <div id="t6" class="tc">
+    <div class="lb"><div class="ll">🎯 In This Section</div><ul>
+      <li>Read realistic provider notes and identify all coding information</li>
+      <li>Find the main term, organism, site, severity, laterality in notes</li>
+      <li>Recognize when cause is documented later in the same note</li>
+      <li>Apply confirmed vs. uncertain diagnosis rules to infectious disease notes</li>
+    </ul></div>
+    <div class="instb"><div class="il">📌 What To Do</div><p>Read each provider note carefully and answer all questions. Every correct answer earns points!</p></div>
+
+    <!-- Note 1 -->
+    <div class="scard">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px;"><div class="snum">1</div><div style="font-weight:800;color:var(--primary);">Mrs. Holloway — Urinary Complaint</div></div>
+      <div class="nbox"><strong>S:</strong> 72-year-old female, 3-day history of burning urination, frequency, lower back pain. No fever.<br><strong>O:</strong> UA: WBC 25, positive nitrites, positive leukocyte esterase. Temp 98.8°F.<br><strong>A:</strong> Acute cystitis.<br><strong>P:</strong> Urine culture ordered. Empiric TMP-SMX started. Follow up in 3 days. Plan states: "If E. coli confirmed on culture, continue current antibiotic."</div>
+    </div>
+
+    <div class="qb" id="nq1">
+      <div class="ql">📄 Note 1 — Q1</div>
+      <div class="qt">What is the codeable primary diagnosis for this encounter?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('nq1',this,false)"><span class="ol">A</span>Burning urination and frequency — the presenting symptoms</div>
+        <div class="opt" onclick="aQ('nq1',this,true)"><span class="ol">B</span>Acute cystitis — the confirmed Assessment diagnosis</div>
+        <div class="opt" onclick="aQ('nq1',this,false)"><span class="ol">C</span>E. coli UTI — the provider suspects E. coli in the Plan</div>
+        <div class="opt" onclick="aQ('nq1',this,false)"><span class="ol">D</span>Urinary tract infection, unspecified — cystitis is too specific a term</div>
+      </div>
+      <div id="nq1-rat" class="rat"><div class="rl">💡 Rationale</div>"Acute cystitis" is the confirmed Assessment diagnosis and is what is coded. Symptoms (burning urination, frequency, lower back pain) are integral to cystitis and NOT separately coded. E. coli is mentioned in the Plan as a conditional "if" — it is NOT a confirmed diagnosis. The culture is pending. Never code a diagnosis that is only suspected, conditional, or unconfirmed.</div>
+    </div>
+
+    <div class="qb" id="nq2">
+      <div class="ql">📄 Note 1 — Q2</div>
+      <div class="qt">The Plan says "if E. coli confirmed." Can the coder add an E. coli organism code (B96.20) at this encounter?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('nq2',this,true)"><span class="ol">A</span>No — E. coli is conditional ("if confirmed") and not yet confirmed in this note; code only confirmed diagnoses</div>
+        <div class="opt" onclick="aQ('nq2',this,false)"><span class="ol">B</span>Yes — the provider mentioned E. coli in the Plan, so it can be coded</div>
+        <div class="opt" onclick="aQ('nq2',this,false)"><span class="ol">C</span>Yes — E. coli causes most UTIs so it should always be assumed and coded</div>
+        <div class="opt" onclick="aQ('nq2',this,false)"><span class="ol">D</span>Only if the patient has had E. coli UTIs before</div>
+      </div>
+      <div id="nq2-rat" class="rat"><div class="rl">💡 Rationale</div>The E. coli is NOT confirmed — the provider says "IF E. coli confirmed." This is conditional language, not a confirmed diagnosis. Coders code only what IS confirmed in the current encounter documentation. If the follow-up note after culture results confirms E. coli, THEN B96.20 can be added at that encounter. Do not code organisms that are only hypothetical or conditional at the current encounter.</div>
+    </div>
+
+    <!-- Note 2 -->
+    <div class="scard" style="margin-top:17px;">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px;"><div class="snum">2</div><div style="font-weight:800;color:var(--primary);">Mr. Vasquez — Skin Infection</div></div>
+      <div class="nbox"><strong>S:</strong> 48-year-old male, redness/warmth/swelling of right lower leg for 2 days. No trauma, no open wounds.<br><strong>O:</strong> Temp 101.2°F. Right lower leg: erythema, warmth, tenderness. No fluctuance. WBC 14,000.<br><strong>A:</strong> Cellulitis, right lower leg.<br><strong>P:</strong> Oral Keflex (cephalexin). Leg elevation. Blood culture ordered (results pending). Return if worsening.</div>
+    </div>
+
+    <div class="qb" id="nq3">
+      <div class="ql">📄 Note 2 — Q1</div>
+      <div class="qt">What is the PRIMARY code driver for Mr. Vasquez's visit?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('nq3',this,false)"><span class="ol">A</span>Fever (101.2°F) — this signals a systemic infection code</div>
+        <div class="opt" onclick="aQ('nq3',this,true)"><span class="ol">B</span>Site and laterality: "right lower leg" — cellulitis codes are driven by the documented site and laterality</div>
+        <div class="opt" onclick="aQ('nq3',this,false)"><span class="ol">C</span>The antibiotic (Keflex) — it reveals the causative organism</div>
+        <div class="opt" onclick="aQ('nq3',this,false)"><span class="ol">D</span>The organism — bacteria always drive cellulitis code selection first</div>
+      </div>
+      <div id="nq3-rat" class="rat"><div class="rl">💡 Rationale</div>For cellulitis, the SITE and LATERALITY are the primary code drivers. Index: Cellulitis → lower limb → right lower leg → L03.115. Fever is integral to cellulitis (not separately coded). No organism is confirmed (blood culture pending). The antibiotic chosen does NOT drive ICD-10-CM coding — it is a clinical treatment decision, not a coding indicator. Site + laterality = the key for cellulitis.</div>
+    </div>
+
+    <!-- Note 3 -->
+    <div class="scard" style="margin-top:17px;">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px;"><div class="snum">3</div><div style="font-weight:800;color:var(--primary);">Ms. Abara — Complex Sepsis Case</div></div>
+      <div class="nbox"><strong>S:</strong> 65-year-old diabetic female, fever, confusion, right flank pain for 1 day.<br><strong>O:</strong> Temp 103.4°F. BP 88/60. HR 118. UA: heavy pyuria, bacteriuria. Blood cultures drawn x2.<br><strong>A:</strong> Severe sepsis due to pyelonephritis. Septic shock present. Causative organism unknown at this time.<br><strong>P:</strong> ICU admission. IV broad-spectrum antibiotics. Blood cultures pending.</div>
+    </div>
+
+    <div class="qb" id="nq4">
+      <div class="ql">📄 Note 3 — Q1</div>
+      <div class="qt">How many separate code categories are needed for Ms. Abara's Assessment?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('nq4',this,false)"><span class="ol">A</span>One — sepsis covers all of her conditions</div>
+        <div class="opt" onclick="aQ('nq4',this,false)"><span class="ol">B</span>Two — sepsis and pyelonephritis</div>
+        <div class="opt" onclick="aQ('nq4',this,true)"><span class="ol">C</span>At least three to four: sepsis code (organism NOS for now), pyelonephritis as the source, severe sepsis code, septic shock code — plus diabetes as a comorbidity</div>
+        <div class="opt" onclick="aQ('nq4',this,false)"><span class="ol">D</span>Wait for the organism before assigning any codes at all</div>
+      </div>
+      <div id="nq4-rat" class="rat"><div class="rl">💡 Rationale</div>This complex case requires multiple codes: (1) Sepsis, NOS (A41.9 if organism unknown), (2) Pyelonephritis as the source/underlying infection, (3) Severe sepsis (R65.20), (4) Septic shock (R65.21), (5) Diabetes mellitus as a comorbidity affecting care. Each documented element that affects the patient's care is coded. Waiting for culture results before coding anything is incorrect — code what is CONFIRMED NOW with the most specific codes available.</div>
+    </div>
+
+    <div class="qb" id="nq5">
+      <div class="ql">📄 Note 3 — Q2</div>
+      <div class="qt">The Assessment states "causative organism unknown at this time." Can the coder still assign a sepsis code?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('nq5',this,true)"><span class="ol">A</span>Yes — A41.9 (Sepsis, unspecified organism) is assigned when the organism is not identified; the confirmed diagnosis is sepsis regardless of organism identification</div>
+        <div class="opt" onclick="aQ('nq5',this,false)"><span class="ol">B</span>No — an organism must be confirmed before any sepsis code can be assigned</div>
+        <div class="opt" onclick="aQ('nq5',this,false)"><span class="ol">C</span>Only code sepsis if the patient is discharged with the final diagnosis</div>
+        <div class="opt" onclick="aQ('nq5',this,false)"><span class="ol">D</span>Code only the pyelonephritis until the organism is confirmed</div>
+      </div>
+      <div id="nq5-rat" class="rat"><div class="rl">💡 Rationale</div>ICD-10-CM provides A41.9 (Sepsis, unspecified organism) for exactly this situation — when the provider has confirmed SEPSIS but the causative organism is not yet identified. The DIAGNOSIS is confirmed (Sepsis — provider stated it in the Assessment). Pending culture results do not delay coding. When culture results come back and confirm the organism, the code can be updated to the organism-specific code. Code the confirmed diagnosis NOW with the best available specificity.</div>
+    </div>
+
+    <div class="brow"><button class="btn bpri" onclick="showT('t7',document.querySelectorAll('.tbtn')[6])">Next: Challenge Zone →</button></div>
+  </div>
+
+  <!-- ======= TAB 7: CHALLENGE ZONE ======= -->
+  <div id="t7" class="tc">
+    <div class="lb"><div class="ll">🎯 In This Section</div><ul>
+      <li>Timed challenge — test all Part 3 concepts under pressure</li>
+      <li>Earn badges based on your streak and performance</li>
+      <li>Mixed questions covering organisms, sites, main terms, and code drivers</li>
+    </ul></div>
+    <div class="instb"><div class="il">📌 What To Do</div><p>Press START to begin the timed challenge. Answer as many questions as you can before time runs out. Each correct answer earns bonus points!</p></div>
+
+    <div class="tbox">
+      <div style="text-align:center;font-weight:800;font-size:1rem;margin-bottom:5px;color:rgba(255,255,255,.85);">⚡ CHALLENGE TIMER</div>
+      <div class="tdis" id="timerDis">2:00</div>
+      <div class="tbar"><div class="tbarfill" id="timerBar" style="width:100%"></div></div>
+      <div style="display:flex;justify-content:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
+        <button class="btn bgrn" id="startBtn" onclick="startChallenge()">▶ Start Challenge</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="spill" style="background:rgba(255,255,255,.13);">⚡ <span id="cScore">0</span> pts</div>
+          <div class="spill" style="background:rgba(255,255,255,.13);">🔥 <span id="cStreak">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="challengeArea" style="display:none;">
+      <div class="qb" id="cqBox">
+        <div class="ql" id="cqLabel">Challenge Q1</div>
+        <div class="qt" id="cqText"></div>
+        <div class="opts" id="cqOpts"></div>
+        <div id="cqRat" class="rat"></div>
+      </div>
+      <div id="nextCBtn" style="display:none;margin-top:10px;">
+        <button class="btn bpri" onclick="nextChallengeQ()">Next Question →</button>
+      </div>
+    </div>
+
+    <div id="challengeResult" style="display:none;">
+      <div class="bearn" id="badgeEarned">
+        <div class="bei" id="badgeIcon">🏅</div>
+        <div class="ben" id="badgeName">Badge Earned!</div>
+        <div class="bed" id="badgeDesc"></div>
+      </div>
+      <div class="card">
+        <div class="ct">🏆 Challenge Results</div>
+        <div id="challengeSummary"></div>
+        <button class="btn bpri" style="margin-top:12px;" onclick="showT('t8',document.querySelectorAll('.tbtn')[7])">View Final Score + Reflection →</button>
+      </div>
+    </div>
+
+    <!-- Mixed review Q's (always visible, non-timed) -->
+    <div class="card" style="margin-top:16px;">
+      <div class="ct">📋 Mixed Review — Additional Practice</div>
+      <p style="font-size:.85rem;color:var(--tx2);font-weight:600;margin-bottom:10px;">These questions cover all Part 3 topics — no timer pressure!</p>
+    </div>
+
+    <div class="qb" id="mq1">
+      <div class="ql">🔀 Mixed — Q1</div>
+      <div class="qt">A provider documents "hepatitis C with cirrhosis." Which is the PRIMARY main term to look up in the index?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('mq1',this,false)"><span class="ol">A</span>Cirrhosis — the most serious condition</div>
+        <div class="opt" onclick="aQ('mq1',this,true)"><span class="ol">B</span>Hepatitis — the disease name; then subterm: C, with cirrhosis</div>
+        <div class="opt" onclick="aQ('mq1',this,false)"><span class="ol">C</span>Liver — the organ affected</div>
+        <div class="opt" onclick="aQ('mq1',this,false)"><span class="ol">D</span>Virus — hepatitis C is a viral condition</div>
+      </div>
+      <div id="mq1-rat" class="rat"><div class="rl">💡 Rationale</div>The main term is "Hepatitis" — the disease name. Index path: Hepatitis → C → with hepatic coma or with other conditions → specific code. "Cirrhosis" is a manifestation/complication of the hepatitis C — it may be captured within the hepatitis C code or require a separate code; verify in the Tabular. The organ (liver) is never the main term; the disease is.</div>
+    </div>
+
+    <div class="qb" id="mq2">
+      <div class="ql">🔀 Mixed — Q2</div>
+      <div class="qt">A provider documents "acute otitis media (ear infection), left ear." In infectious disease coding, what two elements are MOST important for selecting the specific code?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('mq2',this,false)"><span class="ol">A</span>The patient's age and the antibiotic prescribed</div>
+        <div class="opt" onclick="aQ('mq2',this,true)"><span class="ol">B</span>The type (acute vs chronic, with or without effusion) and laterality (left ear) — these drive the specific otitis media code</div>
+        <div class="opt" onclick="aQ('mq2',this,false)"><span class="ol">C</span>The causative organism — always code the bacteria first</div>
+        <div class="opt" onclick="aQ('mq2',this,false)"><span class="ol">D</span>The patient's temperature — fever level determines the code</div>
+      </div>
+      <div id="mq2-rat" class="rat"><div class="rl">💡 Rationale</div>For otitis media, the code is driven by: (1) type — acute suppurative, serous, chronic, etc.; (2) laterality — right, left, bilateral. Main term: Otitis → media → acute → subterms for type and laterality. The organism is often not separately coded unless specifically documented and a Tabular instruction requires it. The document says "acute" (type) and "left ear" (laterality) — these two elements drive the specific code selection.</div>
+    </div>
+
+    <div class="qb" id="mq3">
+      <div class="ql">🔀 Mixed — Q3</div>
+      <div class="qt">Which situation CORRECTLY illustrates coding a symptom instead of a diagnosis in an infectious disease case?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('mq3',this,false)"><span class="ol">A</span>Provider documents "pneumonia" → code cough and fever instead</div>
+        <div class="opt" onclick="aQ('mq3',this,false)"><span class="ol">B</span>Provider documents "sepsis due to Staph aureus" → code fever and hypotension instead</div>
+        <div class="opt" onclick="aQ('mq3',this,true)"><span class="ol">C</span>Provider documents "fever and malaise — possible viral illness, workup ordered" → code fever and malaise since no confirmed diagnosis is established</div>
+        <div class="opt" onclick="aQ('mq3',this,false)"><span class="ol">D</span>Provider documents "acute bronchitis" → code cough since that is the chief complaint</div>
+      </div>
+      <div id="mq3-rat" class="rat"><div class="rl">💡 Rationale</div>Option C is correct: when no confirmed diagnosis is established (only symptoms are documented and the diagnosis is "possible"), code the confirmed symptoms (fever, malaise). Options A, B, and D all have confirmed diagnoses (pneumonia, sepsis, acute bronchitis) — in those cases, code the confirmed diagnosis, NOT the symptoms. The rule is clear: confirmed diagnosis present → code the diagnosis; no confirmed diagnosis → code the symptoms.</div>
+    </div>
+
+    <div class="qb" id="mq4">
+      <div class="ql">🔀 Mixed — Q4</div>
+      <div class="qt">A provider documents "COVID-19 with pneumonia." How many ICD-10-CM codes are likely needed?</div>
+      <div class="opts">
+        <div class="opt" onclick="aQ('mq4',this,false)"><span class="ol">A</span>One — COVID-19 covers the pneumonia automatically</div>
+        <div class="opt" onclick="aQ('mq4',this,true)"><span class="ol">B</span>Two — U07.1 (COVID-19) plus J12.82 (Pneumonia due to COVID-19), or follow current Tabular sequencing instructions for COVID-19 with manifestations</div>
+        <div class="opt" onclick="aQ('mq4',this,false)"><span class="ol">C</span>Three — COVID-19, pneumonia, and the respiratory symptom (cough)</div>
+        <div class="opt" onclick="aQ('mq4',this,false)"><span class="ol">D</span>Use only the pneumonia code — COVID-19 is not separately coded</div>
+      </div>
+      <div id="mq4-rat" class="rat"><div class="rl">💡 Rationale</div>COVID-19 with pneumonia requires multiple codes. Per ICD-10-CM instructions: U07.1 (COVID-19) and J12.82 (Pneumonia due to COVID-19). This is the etiology/manifestation convention in action — the underlying disease (COVID-19) is coded first, followed by the manifestation (pneumonia). The Tabular for COVID-19 has specific sequencing instructions. Always verify in the Tabular for current COVID-19 coding guidelines as these have evolved.</div>
+    </div>
+  </div>
+
+  <!-- ======= TAB 8: SCORE + REFLECTION ======= -->
+  <div id="t8" class="tc">
+    <div class="lb"><div class="ll">🎯 Final Reflection</div><ul>
+      <li>See your complete Part 3 score and performance summary</li>
+      <li>Generate your Amplify reflection summary</li>
+      <li>Write your personal reflection before completing the course</li>
+    </ul></div>
+
+    <div class="card">
+      <div class="ct">🎖️ Your Part 3 Performance</div>
+      <div style="text-align:center;margin:15px 0;">
+        <div style="font-size:3.4rem;font-weight:900;color:var(--primary);" id="finScore">0 / 0</div>
+        <div style="font-size:.98rem;font-weight:700;color:var(--tx2);">Questions Answered Correctly</div>
+        <div style="margin-top:11px;"><div class="pw2" style="max-width:310px;margin:0 auto;height:13px;"><div class="pf2" id="finProg" style="width:0%"></div></div>
+        <div style="font-weight:800;color:var(--primary);margin-top:5px;" id="finPct">0% Mastery</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin:13px 0;">
+        <div style="background:#fef9f0;border-radius:9px;padding:11px;text-align:center;border:1.5px solid #fde68a;">
+          <div style="font-size:1.5rem;" id="bIcon">🌱</div>
+          <div style="font-weight:800;color:var(--primary);font-size:.82rem;margin-top:5px;" id="bLabel">Getting Started</div>
+        </div>
+        <div style="background:#ecfdf5;border-radius:9px;padding:11px;text-align:center;border:1.5px solid #a7f3d0;">
+          <div style="font-size:1.5rem;">✅</div>
+          <div style="font-weight:800;color:var(--a5);font-size:.82rem;margin-top:5px;" id="strongA">—</div>
+          <div style="font-size:.72rem;color:var(--tx2);font-weight:600;">Strongest Area</div>
+        </div>
+        <div style="background:#fffbeb;border-radius:9px;padding:11px;text-align:center;border:1.5px solid #fde68a;">
+          <div style="font-size:1.5rem;">📚</div>
+          <div style="font-weight:800;color:#d97706;font-size:.82rem;margin-top:5px;" id="reviewA">—</div>
+          <div style="font-size:.72rem;color:var(--tx2);font-weight:600;">Review Area</div>
+        </div>
+        <div style="background:#fce7f3;border-radius:9px;padding:11px;text-align:center;border:1.5px solid #fbcfe8;">
+          <div style="font-size:1.5rem;">🔥</div>
+          <div style="font-weight:800;color:#be185d;font-size:.82rem;margin-top:5px;" id="streakFin">0</div>
+          <div style="font-size:.72rem;color:var(--tx2);font-weight:600;">Best Streak</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rbox">
+      <h3>📋 Amplify Reflection Summary</h3>
+      <p style="font-size:.86rem;opacity:.8;margin-bottom:9px;">Generate your summary, then copy and paste into Amplify.</p>
+      <button class="btn bteal" onclick="genSum()">✨ Generate My Summary</button>
+      <div id="sumOut" style="display:none;margin-top:13px;">
+        <div class="stxt" id="sumTxt"></div>
+        <button class="btn" style="background:linear-gradient(135deg,#d97706,#fbbf24);color:#fff;margin-top:8px;" onclick="copySum()">📋 Copy Summary</button>
+        <div id="copyConf" style="display:none;font-size:.81rem;color:#5eead4;margin-top:5px;font-weight:700;">✅ Copied to clipboard!</div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <h3>✍️ Student Reflection — Part 3</h3>
+        <p style="font-size:.83rem;opacity:.8;margin-bottom:7px;">Take a few minutes to reflect on all three parts before submitting.</p>
+        <div style="margin-bottom:7px;"><div style="font-weight:700;font-size:.83rem;margin-bottom:4px;">What was most challenging in Part 3 (Infectious Disease Coding)?</div>
+        <textarea class="rtarea" id="ref1" placeholder="Your response here..."></textarea></div>
+        <div style="margin-bottom:7px;"><div style="font-weight:700;font-size:.83rem;margin-bottom:4px;">What concept made the most sense to you across all 3 parts?</div>
+        <textarea class="rtarea" id="ref2" placeholder="Your response here..."></textarea></div>
+        <div style="margin-bottom:7px;"><div style="font-weight:700;font-size:.83rem;margin-bottom:4px;">What questions do you still have, or what would you like more practice with?</div>
+        <textarea class="rtarea" id="ref3" placeholder="Your response here..."></textarea></div>
+        <button class="btn bpri" style="margin-top:9px;" onclick="addRef()">📎 Add Reflection to Summary</button>
+      </div>
+    </div>
+
+    <!-- FINAL COMPLETE BANNER -->
+    <div class="fbanner">
+      <div style="font-size:3rem;margin-bottom:8px;">🎊</div>
+      <h2>Course Complete!</h2>
+      <p style="opacity:.92;font-size:.97rem;font-weight:700;">Outstanding! You have completed all 3 parts of the<br>Medical Billing Coding Foundations Interactive Mastery Lab!</p>
+      <div style="margin-top:14px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+        <div class="spill" style="background:rgba(255,255,255,.18);">Part 1: Code Sets + SOAP ✅</div>
+        <div class="spill" style="background:rgba(255,255,255,.18);">Part 2: ICD-10-CM Structure ✅</div>
+        <div class="spill" style="background:rgba(255,255,255,.18);">Part 3: Infectious Disease ✅</div>
+      </div>
+      <div class="fcode" style="margin-top:14px;">🏆 Copy your Reflection Summary and submit to Amplify!</div>
+      <p style="opacity:.8;font-size:.85rem;margin-top:10px;font-weight:600;">Developed and Instructed by Hilary Homaii</p>
+    </div>
+  </div>
+
+</div><!-- tw -->
+</div><!-- main -->
+
+<footer>Developed and Instructed by Hilary Homaii &nbsp;|&nbsp; Medical Billing Coding Foundations Interactive Mastery Lab &nbsp;|&nbsp; Part 3</footer>
+
+<script>
+// ======== STATE ========
+let score=0,totalQ=0,streak=0,bestStreak=0;
+const answered=new Set();
+const sec={found:{c:0,t:0},org:{c:0,t:0},body:{c:0,t:0},mt:{c:0,t:0},driver:{c:0,t:0},note:{c:0,t:0},challenge:{c:0,t:0},mixed:{c:0,t:0}};
+const qsec={'fq1':'found','fq2':'found','oq1':'org','oq2':'org','bq1':'body','bq2':'body','bq3':'body','mtq1':'mt','mtq2':'mt','dq1':'driver','dq2':'driver','dq3':'driver','nq1':'note','nq2':'note','nq3':'note','nq4':'note','nq5':'note','mq1':'mixed','mq2':'mixed','mq3':'mixed','mq4':'mixed'};
+
+// ======== TABS ========
+function showT(id,btn){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='t8')updateScoreTab();
+}
+
+// ======== ANSWER ========
+function aQ(id,btn,ok){
+  if(answered.has(id))return;
+  answered.add(id);
+  btn.closest('.opts').querySelectorAll('.opt').forEach(b=>{
+    b.disabled=true;
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true'))b.classList.add('correct');
+  });
+  totalQ++;
+  const s=qsec[id]||'mixed';
+  if(ok){
+    score++;streak++;if(streak>bestStreak)bestStreak=streak;
+    btn.classList.add('correct');
+    if(sec[s]){sec[s].c++;sec[s].t++;}
+    confetti();playSound(true);
+  } else {
+    streak=0;btn.classList.add('incorrect');
+    if(sec[s])sec[s].t++;
+    playSound(false);
+  }
+  const r=document.getElementById(id+'-rat');
+  if(r){r.className='rat show '+(ok?'rok':'rng');}
+  updateDis();
+}
+
+function updateDis(){
+  document.getElementById('sdis').textContent=`Score: ${score} / ${totalQ}`;
+  document.getElementById('strdis').textContent=`Streak: ${streak}`;
+  const p=totalQ>0?Math.round(score/totalQ*100):0;
+  document.getElementById('pctdis').textContent=p+'%';
+  document.getElementById('gprog').style.width=p+'%';
+}
+
+// ======== PRIOR KNOWLEDGE ========
+function pA(el,ok,ratId,correct){
+  const parent=el.parentElement;
+  if(parent.dataset.a)return;
+  parent.dataset.a='1';
+  parent.querySelectorAll('.pqopt').forEach(o=>{
+    o.style.pointerEvents='none';
+    if(o.textContent.trim()===correct)o.classList.add('ok');
+  });
+  if(!ok)el.classList.add('ng');
+  const r=document.getElementById(ratId);
+  if(r){
+    r.className='rat show '+(ok?'rok':'rng');
+    r.innerHTML='<div class="rl">'+(ok?'✅ Correct!':'💡 Correct answer:')+'</div>'+correct+(ok?' — great recall!':'. Remember this for coding!');
+  }
+}
+
+// ======== WORD CARDS ========
+function tw(el){
+  el.classList.toggle('open');
+  el.querySelector('.wd').classList.toggle('show');
+}
+
+// ======== ORGANISM DETAILS ========
+const orgData={
+  bact:'🦠 <strong>Bacteria</strong>: Single-celled prokaryotes that can cause infection. Treated with antibiotics. In ICD-10-CM, many bacterial infections have organism-specific codes. Common bacteria in coding: Staphylococcus aureus, Streptococcus pneumoniae, E. coli, Klebsiella, Pseudomonas, Clostridium difficile. When the specific bacteria is documented, look for a more specific code than the general "bacterial" category.',
+  virus:'🔬 <strong>Virus</strong>: Submicroscopic agents requiring a host cell to replicate. NOT treated with antibiotics — antivirals or supportive care only. ICD-10-CM has specific chapters/categories for viral infections. COVID-19 (U07.1), Influenza (J09-J11), HIV (B20), Herpes (B00-B02), Hepatitis (B15-B19). Knowing it\'s viral prevents looking in bacterial code categories.',
+  para:'🪱 <strong>Parasite</strong>: Organisms that live on or inside a host organism. Can be microscopic (Plasmodium, Giardia, Toxoplasma) or macroscopic (tapeworms, roundworms). ICD-10-CM Chapter 1 B50-B89 covers parasitic diseases. Malaria (B50-B54) is caused by Plasmodium species. Geographic exposure history is often important in parasitic disease documentation.',
+  fung:'🍄 <strong>Fungus</strong>: Includes yeasts and molds. More common in immunocompromised patients (HIV, diabetes, transplant patients). ICD-10-CM B35-B49 covers mycoses (fungal infections). Candida (B37.-) by site, Aspergillus (B44.-), Histoplasma (B39.-), Cryptococcus (B45.-). Not treated with antibiotics — antifungal medications are used instead.'
+};
+function orgDet(k){
+  const b=document.getElementById('orgDBox');
+  b.innerHTML=orgData[k]||'';
+  b.style.display='block';
+}
+
+// ======== ORGANISM SORTER ========
+let selOrgEl=null;
+function orgSel(el){
+  if(el.classList.contains('placed'))return;
+  document.querySelectorAll('.si').forEach(s=>s.classList.remove('ssel'));
+  el.classList.add('ssel');
+  selOrgEl=el;
+  document.getElementById('orgSelTxt').textContent=el.textContent;
+  document.getElementById('orgSelBox').style.display='block';
+}
+function placeOrg(cat){
+  if(!selOrgEl)return;
+  const ok=selOrgEl.dataset.cat===cat;
+  const z=document.getElementById('drop-'+cat);
+  const chip=document.createElement('div');chip.className='dchip';
+  chip.textContent=selOrgEl.textContent;
+  chip.style.borderColor=ok?'var(--a5)':'#ef4444';
+  chip.style.background=ok?'#dcfce7':'#fee2e2';
+  z.appendChild(chip);
+  const fb=document.getElementById('orgFB');
+  if(ok){
+    selOrgEl.classList.add('placed');
+    fb.innerHTML='<div class="rat rok show" style="margin-top:0;"><div class="rl">✅ Correct!</div>'+selOrgEl.textContent+' is a '+cat+'. Knowing organism types helps you navigate the ICD-10-CM index accurately.</div>';
+    score++;bestStreak=Math.max(bestStreak,++streak);sec.org.c++;confetti();playSound(true);
+  } else {
+    fb.innerHTML='<div class="rat rng show" style="margin-top:0;"><div class="rl">❌ Not quite!</div>'+selOrgEl.textContent+' is a <strong>'+selOrgEl.dataset.cat+'</strong>, not a '+cat+'. Check the organism category cards above.</div>';
+    streak=0;playSound(false);
+  }
+  sec.org.t++;totalQ++;updateDis();
+  document.getElementById('orgSelBox').style.display='none';
+  selOrgEl.classList.remove('ssel');selOrgEl=null;
+  const all=document.querySelectorAll('#orgPool .si');
+  if(Array.from(all).every(i=>i.classList.contains('placed')))document.getElementById('orgDone').style.display='block';
+}
+
+// ======== MAIN TERM PRACTICE ========
+const mtCorr={mt1g:'Herpes zoster',mt2g:'Osteomyelitis',mt3g:'HIV'};
+const mtExp={
+  mt1g:{
+    'Herpes zoster':'✅ Correct! "Herpes zoster" is the full disease name used as the main term. Index: Herpes zoster → with postherpetic neuralgia → B02.29. The postherpetic neuralgia is the complication/subterm.',
+    'Herpes':'⚠️ Partially right — "Herpes" is a broader term. You would need to specify "zoster" (shingles) vs "simplex." "Herpes zoster" is the more precise main term for shingles.',
+    'Neuralgia':'❌ Neuralgia is a symptom/complication — not the primary condition. The primary condition is Herpes zoster (shingles), which CAUSED the neuralgia.',
+    'Postherpetic':'❌ "Postherpetic" is an adjective modifier — not the main term. The main term is the disease: Herpes zoster.'
+  },
+  mt2g:{
+    'Osteomyelitis':'✅ Correct! Osteomyelitis is the disease/condition — it is the main term. Then subterms: acute → right tibia. The tibia and "right" are subterms that narrow the code.',
+    'Tibia':'❌ The tibia is a body part — never the main term. Look up the CONDITION (osteomyelitis), then narrow it with the site (tibia) as a subterm.',
+    'Acute':'❌ "Acute" is a time/severity modifier — not a main term. The condition is osteomyelitis; "acute" is a subterm.',
+    'Right':'❌ "Right" is a laterality modifier — not a main term. Laterality is always a subterm or 7th character, never the starting point for a lookup.'
+  },
+  mt3g:{
+    'HIV':'✅ Correct! "HIV disease" (or "Human Immunodeficiency Virus disease") is the main term. Index: HIV disease → resulting in → Kaposi\'s sarcoma → B21.0. HIV is the underlying disease; Kaposi\'s sarcoma is the manifestation.',
+    'Kaposi':'⚠️ Kaposi\'s sarcoma could be a valid entry point in some contexts, but for HIV disease RESULTING IN Kaposi\'s sarcoma, the underlying disease (HIV) typically drives the code selection and sequencing.',
+    'Sarcoma':'❌ "Sarcoma" alone is too general and would lead you to neoplasm codes. The specific condition here is Kaposi\'s sarcoma as a manifestation of HIV disease.',
+    'Disease':'❌ "Disease" alone is too vague for an index lookup. The specific disease name — HIV disease — is what you use.'
+  }
+};
+function mtA(el,gid,answer,expId){
+  const g=document.getElementById(gid);
+  if(g.dataset.a)return;
+  g.dataset.a='1';
+  g.querySelectorAll('.si').forEach(s=>s.style.pointerEvents='none');
+  const ok=mtCorr[gid]===answer;
+  el.style.borderColor=ok?'var(--a5)':'#ef4444';
+  el.style.background=ok?'#dcfce7':'#fee2e2';
+  el.style.color=ok?'#14532d':'#991b1b';
+  const exp=document.getElementById(expId);
+  exp.style.color=ok?'#14532d':'#991b1b';
+  exp.textContent=mtExp[gid][answer]||'';
+  if(ok){score++;bestStreak=Math.max(bestStreak,++streak);sec.mt.c++;confetti();playSound(true);}
+  else{streak=0;playSound(false);}
+  sec.mt.t++;totalQ++;updateDis();
+}
+
+// ======== CHALLENGE ZONE ========
+const cQs=[
+  {q:'A provider documents "flu" in the clinical note. What should the coder look up in the Alphabetic Index?',opts:['Flu — use the exact term the provider wrote','Influenza — "flu" is a lay term that maps to Influenza in ICD-10-CM','Virus — flu is a viral condition','Respiratory — flu affects the respiratory system'],ans:1,rat:'"Flu" is a common lay term for Influenza. ICD-10-CM\'s Alphabetic Index entry is "Influenza" — not "flu." This is another example of provider/patient language not matching ICD-10-CM index terminology. Look up Influenza → then identify which type (A, B, novel, or unspecified) is documented.'},
+  {q:'A patient has "aspiration pneumonia." The main term in the index is Pneumonia. What subterm would you use to get the most specific code?',opts:['Bacterial — aspiration pneumonia is bacterial','Viral — it is caused by aspirated virus','Aspiration — Pneumonia → aspiration leads to J69.0','Unspecified — aspiration is not a specific type'],ans:2,rat:'Index path: Pneumonia → aspiration → J69.0. "Aspiration" is the key subterm because the CAUSE of this pneumonia (aspiration of food/liquids/foreign matter) is specifically documented. J69.0 is completely different from bacterial or viral pneumonia codes.'},
+  {q:'Organism classification: Which of the following is a FUNGAL organism?',opts:['Streptococcus pyogenes','Plasmodium vivax','Cryptococcus neoformans','Influenza B'],ans:2,rat:'Cryptococcus neoformans is a fungal yeast that can cause serious infections, particularly meningitis in immunocompromised patients (coded B45.-). Streptococcus = bacteria; Plasmodium = parasite (causes malaria); Influenza B = virus. Knowing organism types prevents looking in the wrong part of the index.'},
+  {q:'A provider documents "sepsis" with no organism identified. What code is assigned?',opts:['Wait — do not code until organism is confirmed','A40.9 — Streptococcal sepsis, unspecified (assume bacteria)','A41.9 — Sepsis, unspecified organism','R65.20 — Severe sepsis without septic shock'],ans:2,rat:'A41.9 (Sepsis, unspecified organism) is the correct code when sepsis is confirmed but the causative organism is not yet identified or not documented. Coding is NOT delayed for pending culture results. The DIAGNOSIS (sepsis) is confirmed — code it with the best available specificity (NOS). R65.20 is the code for severe sepsis, which requires both a sepsis code AND R65.20.'},
+  {q:'For cellulitis coding, which element is the PRIMARY driver of code specificity?',opts:['The causative organism (bacteria type)','The body site and laterality (right/left, specific location)','The patient\'s age and immune status','The antibiotic prescribed'],ans:1,rat:'For cellulitis, SITE and LATERALITY are the primary code drivers. Right lower leg (L03.115) vs. left lower leg (L03.116) vs. right foot (L03.011) = all different codes. The organism, while clinically important, is often not separately coded for cellulitis unless specifically documented and required by Tabular instructions. Always document and code the specific site and laterality.'},
+  {q:'A provider uses the term "blood poisoning" in a note. What should the coder look up?',opts:['Blood poisoning — use the exact phrase','Sepsis — "blood poisoning" is an older lay term that maps to Sepsis','Bacteremia — blood poisoning = bacteria in blood','Toxemia — poisoning of the blood'],ans:1,rat:'"Blood poisoning" is an older, colloquial term for what ICD-10-CM calls Sepsis. Like "septicemia," this is another example where the provider\'s terminology does not match the ICD-10-CM index entry. The coder must know to look up "Sepsis" when a provider writes "blood poisoning." Medical terminology knowledge bridges the gap between provider language and ICD-10-CM organization.'}
+];
+let cIdx=0,cTimer=null,cSec=120,cCorrect=0,cTotal=0,cCurStreak=0,cBestStreak=0;
+
+function startChallenge(){
+  document.getElementById('startBtn').disabled=true;
+  document.getElementById('startBtn').textContent='⏳ Running...';
+  document.getElementById('challengeArea').style.display='block';
+  cIdx=0;cCorrect=0;cTotal=0;cCurStreak=0;cBestStreak=0;cSec=120;
+  showCQ();
+  cTimer=setInterval(()=>{
+    cSec--;
+    const m=Math.floor(cSec/60),s=cSec%60;
+    document.getElementById('timerDis').textContent=`${m}:${s<10?'0'+s:s}`;
+    document.getElementById('timerBar').style.width=(cSec/120*100)+'%';
+    if(cSec<=30)document.getElementById('timerDis').style.color='#ef4444';
+    if(cSec<=0){clearInterval(cTimer);endChallenge();}
+  },1000);
+}
+
+function showCQ(){
+  if(cIdx>=cQs.length){endChallenge();return;}
+  const q=cQs[cIdx];
+  document.getElementById('cqLabel').textContent=`⚡ Challenge Q${cIdx+1} of ${cQs.length}`;
+  document.getElementById('cqText').textContent=q.q;
+  document.getElementById('cqRat').className='rat';
+  document.getElementById('nextCBtn').style.display='none';
+  const optsEl=document.getElementById('cqOpts');
+  optsEl.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('div');
+    btn.className='opt';
+    btn.innerHTML=`<span class="ol">${String.fromCharCode(65+i)}</span>${o}`;
+    btn.onclick=()=>answerCQ(btn,i===q.ans,q.rat,q.opts,q.ans);
+    optsEl.appendChild(btn);
+  });
+}
+
+function answerCQ(btn,ok,rat,opts,correctIdx){
+  const allBtns=btn.closest('.opts').querySelectorAll('.opt');
+  allBtns.forEach((b,i)=>{b.disabled=true;if(i===correctIdx)b.classList.add('correct');});
+  cTotal++;
+  const r=document.getElementById('cqRat');
+  r.innerHTML=`<div class="rl">${ok?'✅ Correct!':'❌ Incorrect'}</div>${rat}`;
+  r.className='rat show '+(ok?'rok':'rng');
+  if(ok){
+    cCorrect++;cCurStreak++;if(cCurStreak>cBestStreak)cBestStreak=cCurStreak;
+    score++;bestStreak=Math.max(bestStreak,++streak);sec.challenge.c++;
+    document.getElementById('cScore').textContent=cCorrect;
+    confetti();playSound(true);
+  } else {
+    btn.classList.add('incorrect');cCurStreak=0;streak=0;
+    sec.challenge.t++;playSound(false);
+  }
+  sec.challenge.t++;totalQ++;updateDis();
+  document.getElementById('cStreak').textContent=cCurStreak;
+  document.getElementById('nextCBtn').style.display='block';
+  cIdx++;
+}
+
+function nextChallengeQ(){
+  if(cIdx>=cQs.length||cSec<=0)endChallenge();
+  else showCQ();
+}
+
+function endChallenge(){
+  clearInterval(cTimer);
+  document.getElementById('challengeArea').style.display='none';
+  document.getElementById('challengeResult').style.display='block';
+  const pct=cTotal>0?Math.round(cCorrect/cTotal*100):0;
+  let bi='🥉',bn='Bronze Coder',bd='You completed the challenge! Keep practicing infectious disease concepts.';
+  if(pct>=90){bi='🏆';bn='Gold Mastery Badge';bd='Exceptional! You demonstrated superior infectious disease coding knowledge!';}
+  else if(pct>=75){bi='🥈';bn='Silver Proficiency Badge';bd='Great work! Strong understanding of infectious disease coding concepts.';}
+  else if(pct>=60){bi='🥉';bn='Bronze Achiever Badge';bd='Good effort! Review organism types and code driver concepts.';}
+  else{bi='📚';bn='Keep Practicing Badge';bd='Keep going! Review the organism and code driver sections for more practice.';}
+  document.getElementById('badgeIcon').textContent=bi;
+  document.getElementById('badgeName').textContent=bn;
+  document.getElementById('badgeDesc').textContent=bd;
+  document.getElementById('badgeEarned').style.display='block';
+  document.getElementById('challengeSummary').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0;">
+      <div style="text-align:center;background:#fef9f0;border-radius:9px;padding:12px;border:1.5px solid #fde68a;">
+        <div style="font-size:1.8rem;font-weight:900;color:var(--primary);">${cCorrect}/${cTotal}</div>
+        <div style="font-size:.78rem;font-weight:700;color:var(--tx2);">Correct</div>
+      </div>
+      <div style="text-align:center;background:#dcfce7;border-radius:9px;padding:12px;border:1.5px solid #a7f3d0;">
+        <div style="font-size:1.8rem;font-weight:900;color:var(--a5);">${pct}%</div>
+        <div style="font-size:.78rem;font-weight:700;color:var(--tx2);">Score</div>
+      </div>
+      <div style="text-align:center;background:#fdf4ff;border-radius:9px;padding:12px;border:1.5px solid #ddd6fe;">
+        <div style="font-size:1.8rem;font-weight:900;color:var(--a2);">🔥${cBestStreak}</div>
+        <div style="font-size:.78rem;font-weight:700;color:var(--tx2);">Best Streak</div>
+      </div>
+    </div>`;
+}
+
+// ======== SCORE TAB ========
+function updateScoreTab(){
+  const p=totalQ>0?Math.round(score/totalQ*100):0;
+  document.getElementById('finScore').textContent=`${score} / ${totalQ}`;
+  document.getElementById('finProg').style.width=p+'%';
+  document.getElementById('finPct').textContent=p+'% Mastery';
+  document.getElementById('streakFin').textContent=bestStreak;
+  let bi='🌱',bl='Getting Started';
+  if(p>=90){bi='🏆';bl='Mastery Expert';}else if(p>=75){bi='⭐';bl='Strong Performer';}else if(p>=60){bi='📈';bl='On Track';}else if(p>=40){bi='💪';bl='Keep Practicing';}
+  document.getElementById('bIcon').textContent=bi;
+  document.getElementById('bLabel').textContent=bl;
+  const sn={found:'ID Foundations',org:'Organisms & Agents',body:'Body Systems',mt:'Main Term in ID',driver:'Code Drivers',note:'Provider Note Practice',challenge:'Challenge Zone',mixed:'Mixed Review'};
+  let best='',bestP=-1,worst='',worstP=101;
+  Object.entries(sec).forEach(([k,v])=>{if(v.t>0){const pp=v.c/v.t;if(pp>bestP){bestP=pp;best=k;}if(pp<worstP){worstP=pp;worst=k;}}});
+  document.getElementById('strongA').textContent=best?sn[best]:'—';
+  document.getElementById('reviewA').textContent=worst&&worst!==best?sn[worst]:'—';
+}
+
+// ======== SUMMARY ========
+function genSum(){
+  updateScoreTab();
+  const p=totalQ>0?Math.round(score/totalQ*100):0;
+  const sn={found:'ID Foundations',org:'Organisms & Agents',body:'Body Systems',mt:'Main Term in ID',driver:'Code Drivers',note:'Provider Note Practice',challenge:'Challenge Zone',mixed:'Mixed Review'};
+  let breakdown='';
+  Object.entries(sec).forEach(([k,v])=>{if(v.t>0)breakdown+=`  - ${sn[k]}: ${v.c}/${v.t} (${Math.round(v.c/v.t*100)}%)\n`;});
+  let best='',bestP=-1,worst='',worstP=101;
+  Object.entries(sec).forEach(([k,v])=>{if(v.t>0){const pp=v.c/v.t;if(pp>bestP){bestP=pp;best=k;}if(pp<worstP){worstP=pp;worst=k;}}});
+  const ml=p>=90?'Excellent — superior mastery':p>=75?'Good — solid understanding':p>=60?'Developing — key concepts emerging':'Foundational — revisit before applying clinically';
+  const d=new Date();
+  const txt=`================================================
+MEDICAL BILLING CODING FOUNDATIONS — PART 3
+Student Reflection & Evaluation Summary
+Date: ${d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+================================================
+
+SCORE: ${score} / ${totalQ} (${p}%)
+MASTERY LEVEL: ${ml}
+BEST STREAK: ${bestStreak} correct in a row
+
+SECTION BREAKDOWN:
+${breakdown||'  (Complete more questions to see breakdown)'}
+
+STRONGEST AREA: ${best?sn[best]:'—'}
+NEEDS REVIEW: ${worst&&worst!==best?sn[worst]:'—'}
+
+PART 3 CONCEPTS COVERED:
+  ✓ Infectious disease terminology (Sepsis, Cellulitis, UTI, Abscess)
+  ✓ Why provider wording may differ from ICD-10-CM index entries
+  ✓ "Septicemia" maps to "Sepsis" in the index
+  ✓ Four organism types: Bacteria, Virus, Parasite, Fungus
+  ✓ How organism type affects code selection
+  ✓ Body system site vs. organism as code drivers
+  ✓ When SITE drives the code (cellulitis) vs. DISEASE NAME (tuberculosis)
+  ✓ Main term identification in infectious disease documentation
+  ✓ The 6 code drivers: main term, organism, site, severity, laterality, manifestation
+  ✓ How wording changes produce different codes (specificity)
+  ✓ Reading the entire note — cause documented anywhere in the note counts
+  ✓ Confirmed vs. uncertain diagnosis in infectious disease notes
+  ✓ Sepsis NOS when organism is unknown — A41.9
+  ✓ Challenge Zone mixed practice
+
+COURSE COMPLETION:
+  ✅ Part 1: Code Sets (ICD-10-CM, CPT, HCPCS, ICD-10-PCS) + SOAP + Coding Logic
+  ✅ Part 2: ICD-10-CM Structure, Index, Tabular, Confirmed vs. Suspected
+  ✅ Part 3: Infectious Disease Coding, Organisms, Body Systems, Code Drivers
+
+NEXT STEPS:
+  → Review any section below 75%
+  → Practice additional ICD-10-CM infectious disease scenarios
+  → Ask instructor about areas still needing clarification
+================================================`;
+  document.getElementById('sumTxt').textContent=txt;
+  document.getElementById('sumOut').style.display='block';
+}
+
+function copySum(){
+  const t=document.getElementById('sumTxt').textContent;
+  navigator.clipboard.writeText(t).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);});
+  const c=document.getElementById('copyConf');c.style.display='block';
+  setTimeout(()=>c.style.display='none',3000);
+}
+
+function addRef(){
+  const r1=document.getElementById('ref1').value.trim();
+  const r2=document.getElementById('ref2').value.trim();
+  const r3=document.getElementById('ref3').value.trim();
+  if(!r1&&!r2&&!r3){alert('Please write your reflections first!');return;}
+  const el=document.getElementById('sumTxt');
+  if(!el.textContent){genSum();}
+  if(!el.textContent.includes('STUDENT REFLECTION')){
+    el.textContent+=`\nSTUDENT REFLECTION:\n  Most challenging in Part 3: ${r1||'(not answered)'}\n  Concept that made the most sense: ${r2||'(not answered)'}\n  Still need help with: ${r3||'(not answered)'}\n================================================`;
+  }
+  document.getElementById('sumOut').style.display='block';
+  alert('✅ Reflection added! Copy your complete summary and submit to Amplify.');
+}
+
+// ======== CONFETTI ========
+function confetti(){
+  const w=document.getElementById('cWrap');
+  const cols=['#b45309','#d97706','#0f766e','#7c3aed','#be185d','#16a34a','#0369a1'];
+  for(let i=0;i<16;i++){
+    const d=document.createElement('div');d.className='cd';
+    d.style.left=Math.random()*100+'vw';d.style.top='-10px';
+    d.style.background=cols[Math.floor(Math.random()*cols.length)];
+    d.style.animationDelay=Math.random()*0.4+'s';
+    d.style.animationDuration=(0.9+Math.random()*0.5)+'s';
+    w.appendChild(d);d.addEventListener('animationend',()=>d.remove());
+  }
+}
+
+// ======== SOUND ========
+function playSound(ok){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    if(ok){o.frequency.setValueAtTime(523,ctx.currentTime);o.frequency.setValueAtTime(659,ctx.currentTime+0.1);o.frequency.setValueAtTime(784,ctx.currentTime+0.2);g.gain.setValueAtTime(0.14,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);}
+    else{o.frequency.setValueAtTime(280,ctx.currentTime);o.frequency.setValueAtTime(200,ctx.currentTime+0.15);g.gain.setValueAtTime(0.09,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.3);}
+  }catch(e){}
+}
+
+updateDis();
+</script>
+</body>
+</html>
